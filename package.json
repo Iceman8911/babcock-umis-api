@@ -11,7 +11,9 @@
 		"turbo": "^2.8.9"
 	},
 	"lint-staged": {
-		"*.{js,jsx,ts,tsx,css,json}": "biome check --write"
+		"*": [
+			"biome check --no-errors-on-unmatched --files-ignore-unknown=true --write"
+		]
 	},
 	"module": "index.ts",
 	"name": "babcock-umis-api",
