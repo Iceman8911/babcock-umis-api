@@ -25,7 +25,10 @@
 	"scripts": {
 		"build": "turbo build",
 		"check-types": "turbo check-types",
-		"dev": "turbo dev"
+		"dev": "turbo dev",
+		"format": "turbo format",
+		"lint": "turbo lint",
+		"test": "turbo test"
 	},
 	"type": "module",
 	"workspaces": [
