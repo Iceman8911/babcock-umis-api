@@ -1,4 +1,4 @@
-import { HTMLParser } from "../models/html-parser";
+import HTMLParser from "../models/html-parser";
 
 const domParser = new DOMParser();
 
@@ -14,21 +14,6 @@ export default class BrowserHTMLParser extends HTMLParser {
 		return new BrowserHTMLParser(
 			domParser.parseFromString(await htmlRes.text(), "text/html"),
 		);
-	}
-
-	override onOne(cssSelector: string, cb: (text: string) => void): HTMLParser {
-		this.cbs.push({ cb, css: cssSelector, type: "one" });
-
-		return this;
-	}
-
-	override onAll(
-		cssSelector: string,
-		cb: (texts: ReadonlyArray<string>) => void,
-	): HTMLParser {
-		this.cbs.push({ cb, css: cssSelector, type: "all" });
-
-		return this;
 	}
 
 	override async process(): Promise<void> {
