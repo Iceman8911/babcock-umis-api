@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
+import type HTMLParser from "../models/html-parser";
 import { _SAMPLE_HTML_RESPONSE } from "./_shared";
 
 /**
@@ -9,7 +10,7 @@ import { _SAMPLE_HTML_RESPONSE } from "./_shared";
  */
 export function runHTMLParserSharedTests(
 	parserName: string,
-	parserFactory: (htmlRes: Response) => Promise<any>,
+	parserFactory: (htmlRes: Response) => Promise<HTMLParser>,
 	options?: {
 		beforeEachHook?: () => void | Promise<void>;
 		afterEachHook?: () => void | Promise<void>;
@@ -71,6 +72,7 @@ export function runHTMLParserSharedTests(
 			expect(paragraphs).toEqual([
 				"This domain is for use in documentation examples without needing permission. Avoid use in operations.",
 				"Learn more",
+				"Nested",
 			]);
 		});
 
@@ -144,6 +146,43 @@ export function runHTMLParserSharedTests(
 
 			// <img> has no textContent, so callback should not be called
 			expect(imgText).toBe("not-called");
+		});
+
+		it("should extract the textContent of a parent <div> (which consists of its descendants)", async () => {
+			const parser = await parserFactory(testHtmlResponse);
+
+			let divText = "";
+			await parser
+				.onOne("div#foo", (text) => {
+					divText = text;
+				})
+				.process();
+
+			expect(divText).not.toBeEmpty();
+			expect(divText).toInclude("Top-Level");
+			expect(divText).toInclude("Nested");
+			expect(divText).toInclude("Another Nested");
+		});
+
+		it("should extract the textContent of all 4 <div>s even though some are nested", async () => {
+			const parser = await parserFactory(testHtmlResponse);
+
+			let divTexts: string[] = [];
+			await parser
+				.onAll("div", (texts) => {
+					divTexts = [...texts];
+				})
+				.process();
+
+			const valsToCheck = ["Top-Level", "Nested", "Another Nested"] as const;
+
+			expect(divTexts).not.toBeEmpty();
+			expect(divTexts).toHaveLength(4);
+			expect(
+				divTexts.filter((text) =>
+					valsToCheck.some((val) => text.includes(val)),
+				),
+			).toHaveLength(4);
 		});
 	});
 }

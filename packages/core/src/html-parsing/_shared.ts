@@ -21,6 +21,16 @@ export const _SAMPLE_HTML_RESPONSE: Response = new Response(`<html lang="en">
         <button type="submit">Submit</button>
       </form>
       <img src="https://via.placeholder.com/150" alt="Placeholder Image" />
+
+      <div id="foo">
+        Top-Level
+        <div id="bar">
+          <p>Nested</p>
+        </div>
+        <button>
+          <div>Another Nested</div>
+        </button>
+      </div>
     </div>
   </body>
 </html>
