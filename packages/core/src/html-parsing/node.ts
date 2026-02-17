@@ -17,24 +17,26 @@ export default class NodeHTMLParser extends HTMLParser {
 	}
 
 	override async process(): Promise<void> {
-		for (const { cb, css, isOne } of this.cbs) {
-			if (isOne) {
-				const possibleText = this.#pseudoDom
-					.querySelector(css)
-					?.textContent.trim();
+		await Promise.all(
+			this.cbs.map(async ({ cb, css, isOne }) => {
+				if (isOne) {
+					const possibleText = this.#pseudoDom
+						.querySelector(css)
+						?.textContent.trim();
 
-				if (possibleText) cb(possibleText);
-			} else {
-				const possibleTexts: string[] = [];
+					if (possibleText) return cb(possibleText);
+				} else {
+					const possibleTexts: string[] = [];
 
-				for (const ele of this.#pseudoDom.querySelectorAll(css)) {
-					const trimmed = ele.textContent.trim();
+					for (const ele of this.#pseudoDom.querySelectorAll(css)) {
+						const trimmed = ele.textContent.trim();
 
-					if (trimmed) possibleTexts.push(trimmed);
+						if (trimmed) possibleTexts.push(trimmed);
+					}
+
+					return cb(possibleTexts);
 				}
-
-				cb(possibleTexts);
-			}
-		}
+			}),
+		);
 	}
 }

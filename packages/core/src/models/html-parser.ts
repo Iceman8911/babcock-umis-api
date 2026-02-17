@@ -1,5 +1,7 @@
-export type OnTextCb = (text: string) => void;
-export type OnAllTextCb = (texts: ReadonlyArray<string>) => void;
+export type OnTextCb = (text: string) => void | Promise<void>;
+export type OnAllTextCb = (
+	texts: ReadonlyArray<string>,
+) => void | Promise<void>;
 type CbArrayElement = (
 	| {
 			cb: OnTextCb;
@@ -23,17 +25,14 @@ export default abstract class HTMLParser {
 	protected cbs: Array<CbArrayElement> = [];
 
 	/** Attaches the given callback to be ran when the first element matching the selector is found when the response is processed */
-	onOne(cssSelector: string, cb: (text: string) => void): HTMLParser {
+	onOne(cssSelector: string, cb: OnTextCb): HTMLParser {
 		this.cbs.push({ cb, css: cssSelector, isOne: true });
 
 		return this;
 	}
 
 	/** Attaches the given callback to be ran when elements matching the selector is found when the response is processed */
-	onAll(
-		cssSelector: string,
-		cb: (texts: ReadonlyArray<string>) => void,
-	): HTMLParser {
+	onAll(cssSelector: string, cb: OnAllTextCb): HTMLParser {
 		this.cbs.push({ cb, css: cssSelector, isOne: false });
 
 		return this;
