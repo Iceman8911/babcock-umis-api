@@ -4,12 +4,20 @@
 		"build": {
 			"outputs": ["dist/**", ".output/**"]
 		},
+
+		"check": {
+			"dependsOn": ["^check"]
+		},
 		"check-types": {
 			"dependsOn": ["^check-types"]
 		},
 		"dev": {
 			"cache": false,
 			"persistent": true
+		},
+
+		"test": {
+			"dependsOn": ["^test"]
 		}
 	}
 }
