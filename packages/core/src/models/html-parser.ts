@@ -13,6 +13,11 @@ type CbArrayElement = (
 	css: string;
 };
 
+/** Cleanup redundant spaces and newlines */
+function normalizeText(text: string): string {
+	return text.replace(/[\n\s]+/g, " ").trim();
+}
+
 /** Generic abstract builder interface for running callbacks on found elements / text in a html response */
 export default abstract class HTMLParser {
 	protected constructor(...args: never[]) {}
@@ -26,14 +31,19 @@ export default abstract class HTMLParser {
 
 	/** Attaches the given callback to be ran when the first element matching the selector is found when the response is processed */
 	onOne(cssSelector: string, cb: OnTextCb): HTMLParser {
-		this.cbs.push({ cb, css: cssSelector, isOne: true });
+		const normalizedCb: OnTextCb = (text: string) => cb(normalizeText(text));
+
+		this.cbs.push({ cb: normalizedCb, css: cssSelector, isOne: true });
 
 		return this;
 	}
 
 	/** Attaches the given callback to be ran when elements matching the selector is found when the response is processed */
 	onAll(cssSelector: string, cb: OnAllTextCb): HTMLParser {
-		this.cbs.push({ cb, css: cssSelector, isOne: false });
+		const normalizedCb: OnAllTextCb = (texts: ReadonlyArray<string>) =>
+			cb(texts.map(normalizeText));
+
+		this.cbs.push({ cb: normalizedCb, css: cssSelector, isOne: false });
 
 		return this;
 	}
