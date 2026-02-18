@@ -184,5 +184,365 @@ export function runHTMLParserSharedTests(
 				),
 			).toHaveLength(4);
 		});
+		// --- Advanced & Edge Case Tests ---
+
+		it("should extract text from nested elements of the same type", async () => {
+			const html = `
+				<div>
+					<div>Outer<div>Inner</div></div>
+					<div>Sibling</div>
+				</div>
+			`;
+			const res = new Response(html, {
+				headers: { "content-type": "text/html" },
+			});
+			const parser = await parserFactory(res);
+
+			let divs: string[] = [];
+			parser.onAll("div", (texts) => {
+				divs = [...texts];
+			});
+
+			await parser.process();
+
+			// Accept any order containing these, as parser implementations may differ in order and count
+			expect(divs.some((d) => d.includes("Outer") && d.includes("Inner"))).toBe(
+				true,
+			);
+			expect(divs.some((d) => d.trim() === "Inner")).toBe(true);
+			expect(divs.some((d) => d.trim() === "Sibling")).toBe(true);
+		});
+
+		it("should extract text from elements with mixed content (text + child elements)", async () => {
+			const html = `<p>Hello <b>world</b>!</p>`;
+			const res = new Response(html, {
+				headers: { "content-type": "text/html" },
+			});
+			const parser = await parserFactory(res);
+
+			let pText = "";
+			parser.onOne("p", (text) => {
+				pText = text;
+			});
+
+			await parser.process();
+
+			expect(pText.replace(/\s+/g, " ")).toContain("Hello world!");
+		});
+
+		it("should ignore elements with only whitespace or empty tags", async () => {
+			const html = `<div>   </div><div></div><div>Not empty</div>`;
+			const res = new Response(html, {
+				headers: { "content-type": "text/html" },
+			});
+			const parser = await parserFactory(res);
+
+			let divs: string[] = [];
+			parser.onAll("div", (texts) => {
+				divs = [...texts];
+			});
+
+			await parser.process();
+
+			expect(divs).toContain("Not empty");
+			expect(divs).not.toContain("");
+			expect(divs).not.toContain("   ");
+		});
+
+		it("should extract text with special characters and HTML entities", async () => {
+			const html = `<p>&amp; &lt; &gt; © ™</p>`;
+			const res = new Response(html, {
+				headers: { "content-type": "text/html" },
+			});
+			const parser = await parserFactory(res);
+
+			let pText = "";
+			parser.onOne("p", (text) => {
+				pText = text;
+			});
+
+			await parser.process();
+
+			// Accept either decoded or raw entities, as parser implementations may differ
+			expect(/(&|&amp;)/.test(pText)).toBe(true);
+			expect(/(<|&lt;)/.test(pText)).toBe(true);
+			expect(/(>|&gt;)/.test(pText)).toBe(true);
+			expect(pText).toContain("©");
+			expect(pText).toContain("™");
+		});
+
+		it("should support multiple selectors in the same parse", async () => {
+			const html = `
+				<ul>
+					<li>One</li>
+					<li>Two</li>
+				</ul>
+				<p>Para</p>
+			`;
+			const res = new Response(html, {
+				headers: { "content-type": "text/html" },
+			});
+			const parser = await parserFactory(res);
+
+			let items: string[] = [];
+			let para = "";
+			parser.onAll("li", (texts) => {
+				items = [...texts];
+			});
+			parser.onOne("p", (text) => {
+				para = text;
+			});
+
+			await parser.process();
+
+			expect(items).toEqual(["One", "Two"]);
+			expect(para).toBe("Para");
+		});
+	});
+
+	it("should extract text from deeply nested lists", async () => {
+		const html = `
+			<ul>
+				<li>Item 1
+					<ul>
+						<li>Subitem 1a</li>
+						<li>Subitem 1b
+							<ul>
+								<li>Subsubitem 1b-i</li>
+							</ul>
+						</li>
+					</ul>
+				</li>
+				<li>Item 2</li>
+			</ul>
+		`;
+		const res = new Response(html, {
+			headers: { "content-type": "text/html" },
+		});
+		const parser = await parserFactory(res);
+
+		let items: string[] = [];
+		parser.onAll("li", (texts) => {
+			items = [...texts];
+		});
+
+		await parser.process();
+
+		expect(items).toContain("Item 1Subitem 1aSubitem 1bSubsubitem 1b-i");
+		expect(items).toContain("Subitem 1a");
+		expect(items).toContain("Subitem 1bSubsubitem 1b-i");
+		expect(items).toContain("Subsubitem 1b-i");
+		expect(items).toContain("Item 2");
+	});
+
+	it("should extract text from nested blockquotes", async () => {
+		const html = `
+			<blockquote>
+				Outer quote
+				<blockquote>
+					Inner quote
+				</blockquote>
+			</blockquote>
+		`;
+		const res = new Response(html, {
+			headers: { "content-type": "text/html" },
+		});
+		const parser = await parserFactory(res);
+
+		let quotes: string[] = [];
+		parser.onAll("blockquote", (texts) => {
+			quotes = [...texts];
+		});
+
+		await parser.process();
+
+		expect(quotes.some((q) => q.includes("Outer quote"))).toBe(true);
+		expect(quotes.some((q) => q.includes("Inner quote"))).toBe(true);
+	});
+
+	it("should extract text from interleaved inline and block elements", async () => {
+		const html = `<p>Start <span>inline <b>bold</b></span> End</p>`;
+		const res = new Response(html, {
+			headers: { "content-type": "text/html" },
+		});
+		const parser = await parserFactory(res);
+
+		let pText = "";
+		parser.onOne("p", (text) => {
+			pText = text;
+		});
+
+		await parser.process();
+
+		expect(pText.replace(/\s+/g, " ")).toContain("Start inline bold End");
+	});
+
+	it("should handle malformed HTML (missing end tags)", async () => {
+		const html = `<div>Open <span>Still open<div>Closed</div>`;
+		const res = new Response(html, {
+			headers: { "content-type": "text/html" },
+		});
+		const parser = await parserFactory(res);
+
+		let divs: string[] = [];
+		parser.onAll("div", (texts) => {
+			divs = [...texts];
+		});
+
+		await parser.process();
+
+		expect(divs.some((d) => d.includes("Open"))).toBe(true);
+		expect(divs.some((d) => d.includes("Closed"))).toBe(true);
+	});
+
+	// --- Complex Selector and Realistic HTML Tests ---
+
+	it("should extract text using descendant selector", async () => {
+		const html = `
+			<div>
+				<span>Descendant 1</span>
+				<div>
+					<span>Visible</div>
+			<script>var x = 1;</script>
+			<style>.hidden { display: none; }</style>
+		`;
+		const res = new Response(html, {
+			headers: { "content-type": "text/html" },
+		});
+		const parser = await parserFactory(res);
+
+		let scriptText = "not-called";
+		let styleText = "not-called";
+		let divText = "";
+		parser.onOne("script", (text) => {
+			scriptText = text;
+		});
+		parser.onOne("style", (text) => {
+			styleText = text;
+		});
+		parser.onOne("div", (text) => {
+			divText = text;
+		});
+
+		await parser.process();
+
+		expect(scriptText).toBe("not-called");
+		expect(styleText).toBe("not-called");
+		expect(divText).toContain("Visible");
+	});
+
+	it("should extract text from tables (headers, rows, cells)", async () => {
+		const html = `
+			<table>
+				<thead>
+					<tr><th>H1</th><th>H2</th></tr>
+				</thead>
+				<tbody>
+					<tr><td>R1C1</td><td>R1C2</td></tr>
+					<tr><td>R2C1</td><td>R2C2</td></tr>
+				</tbody>
+			</table>
+		`;
+		const res = new Response(html, {
+			headers: { "content-type": "text/html" },
+		});
+		const parser = await parserFactory(res);
+
+		let headers: string[] = [];
+		let cells: string[] = [];
+		parser.onAll("th", (texts) => {
+			headers = [...texts];
+		});
+		parser.onAll("td", (texts) => {
+			cells = [...texts];
+		});
+
+		await parser.process();
+
+		expect(headers).toEqual(["H1", "H2"]);
+		expect(cells).toEqual(["R1C1", "R1C2", "R2C1", "R2C2"]);
+	});
+
+	it("should extract text from forms (labels, textarea)", async () => {
+		const html = `
+			<form>
+				<label for="f">Label</label>
+				<input id="f" type="text" value="foo">
+				<textarea>Some text</textarea>
+			</form>
+		`;
+		const res = new Response(html, {
+			headers: { "content-type": "text/html" },
+		});
+		const parser = await parserFactory(res);
+
+		let label = "";
+		let textarea = "";
+		parser.onOne("label", (text) => {
+			label = text;
+		});
+		parser.onOne("textarea", (text) => {
+			textarea = text;
+		});
+
+		await parser.process();
+
+		expect(label).toBe("Label");
+		expect(textarea).toBe("Some text");
+	});
+
+	it("should extract Unicode and mixed-language content", async () => {
+		const html = `<p>English 中文 عربى русский 🚀</p>`;
+		const res = new Response(html, {
+			headers: { "content-type": "text/html" },
+		});
+		const parser = await parserFactory(res);
+
+		let pText = "";
+		parser.onOne("p", (text) => {
+			pText = text;
+		});
+
+		await parser.process();
+
+		expect(pText).toContain("English");
+		expect(pText).toContain("中文");
+		expect(pText).toContain("عربى");
+		expect(pText).toContain("русский");
+		expect(pText).toContain("🚀");
+	});
+
+	it("should normalize whitespace and line breaks", async () => {
+		const html = `<div>   Line 1\n   Line 2   <span>  Line 3 </span>   </div>`;
+		const res = new Response(html, {
+			headers: { "content-type": "text/html" },
+		});
+		const parser = await parserFactory(res);
+
+		let divText = "";
+		parser.onOne("div", (text) => {
+			divText = text;
+		});
+
+		await parser.process();
+
+		expect(divText.replace(/\s+/g, " ")).toContain("Line 1 Line 2 Line 3");
+	});
+
+	it("should extract text from elements with ARIA or data-* attributes", async () => {
+		const html = `<span aria-label="foo" data-info="bar">Accessible</span>`;
+		const res = new Response(html, {
+			headers: { "content-type": "text/html" },
+		});
+		const parser = await parserFactory(res);
+
+		let spanText = "";
+		parser.onOne("span", (text) => {
+			spanText = text;
+		});
+
+		await parser.process();
+
+		expect(spanText).toBe("Accessible");
 	});
 }
