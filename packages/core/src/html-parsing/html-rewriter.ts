@@ -16,8 +16,8 @@ interface OnAllTextCbTrackingData {
 	/** Combined text strings to pass to the callback */
 	allText: string[];
 
-	/** Index in `allText` to append data to */
-	index: number;
+	/** Stack of indices for currently-open matching elements (supports nesting) */
+	stack: number[];
 }
 
 export default class HTMLRewriterHTMLParser extends HTMLParser {
@@ -46,7 +46,7 @@ export default class HTMLRewriterHTMLParser extends HTMLParser {
 	#getValInOnAllTextCbTrackingMap(cb: OnAllTextCb): OnAllTextCbTrackingData {
 		return getOrInsert(this.#onAllTextCbTrackingMap, cb, {
 			allText: [],
-			index: 0,
+			stack: [],
 		});
 	}
 
@@ -72,88 +72,96 @@ export default class HTMLRewriterHTMLParser extends HTMLParser {
 		let htmlRewriter = this.#htmlRewriter;
 		const self = this;
 
-		// The text we want is the text content of the entire element so we initially setup handlers to concatenate all the text we need
+		// The text we want is the text content of the entire element so we initially setup handlers to concatenate all the text we need.
+		// For "onAll" we need to support nested matches and self-closing elements, so we maintain a stack of open matches per callback.
 		for (const { cb, css, isOne } of this.cbs) {
 			if (isOne) {
-				htmlRewriter = htmlRewriter
-					.on(css, {
-						element(el) {
-							if (el.selfClosing) {
-								// Void tag, no text content too
+				htmlRewriter = htmlRewriter.on(css, {
+					element(el) {
+						if (el.selfClosing) {
+							// Void tag, no textContent expected — mark as seen so text chunks won't be captured
+							self.#modifyOnTextCbMap(cb, (prev) => {
+								prev.count++;
+								return prev;
+							});
+						} else {
+							// Ensure we only finalize (mark seen) when the element's end tag is reached
+							el.onEndTag(() => {
 								self.#modifyOnTextCbMap(cb, (prev) => {
 									prev.count++;
 									return prev;
 								});
-							} else {
-								// With this, we can specifically be sure that we've reached the ending tag / processed  single element
-								el.onEndTag(() => {
-									self.#modifyOnTextCbMap(cb, (prev) => {
-										prev.count++;
-										return prev;
-									});
-								});
-							}
-						},
-						text({ text }) {
-							if (self.#getValInOnTextCbTrackingMap(cb).count > 0) return;
-
-							self.#modifyOnTextCbMap(cb, (prev) => {
-								prev.text += text;
-								return prev;
 							});
-						},
-					})
-					.on(`${css} *`, {
-						text({ text }) {
-							if (self.#getValInOnTextCbTrackingMap(cb).count > 0) return;
+						}
+					},
+					text({ text }) {
+						// If we've already seen/finished the first matching element, ignore further chunks
+						if (self.#getValInOnTextCbTrackingMap(cb).count > 0) return;
 
-							self.#modifyOnTextCbMap(cb, (prev) => {
-								prev.text += text;
-								return prev;
-							});
-						},
-					});
+						self.#modifyOnTextCbMap(cb, (prev) => {
+							prev.text += text;
+							return prev;
+						});
+					},
+				});
 			} else {
-				htmlRewriter = htmlRewriter
-					.on(css, {
-						element(el) {
-							// With this, we can specifically be sure that we've reached the ending tag / processed  single element
+				// onAll: maintain a stack of open matches so nested elements are handled independently.
+				htmlRewriter = htmlRewriter.on(css, {
+					element(el) {
+						// Create a new slot for this matching element and push its index on the stack
+						self.#modifyOnAllTextCbMap(cb, (prev) => {
+							const newIndex = prev.allText.length;
+							prev.allText.push("");
+							prev.stack.push(newIndex);
+							return prev;
+						});
+
+						if (el.selfClosing) {
+							// Self-closing: no text chunks will arrive; pop immediately to close this match.
+							self.#modifyOnAllTextCbMap(cb, (prev) => {
+								prev.stack.pop();
+								return prev;
+							});
+						} else {
+							// Pop the stack when the end tag arrives, ensuring any nested matches that opened after this one are already closed.
 							el.onEndTag(() => {
 								self.#modifyOnAllTextCbMap(cb, (prev) => {
-									prev.index++;
+									prev.stack.pop();
 									return prev;
 								});
 							});
-						},
-						text({ text }) {
-							self.#modifyOnAllTextCbMap(cb, (prev) => {
-								const oldText = prev.allText[prev.index] || "";
-								prev.allText[prev.index] = `${oldText}${text}`;
-								return prev;
-							});
-						},
-					})
-					.on(`${css} *`, {
-						text({ text }) {
-							self.#modifyOnAllTextCbMap(cb, (prev) => {
-								const oldText = prev.allText[prev.index] || "";
-								prev.allText[prev.index] = `${oldText}${text}`;
-								return prev;
-							});
-						},
-					});
+						}
+					},
+					text({ text }) {
+						// Append incoming chunk to all currently-open matching elements so ancestor matches include descendant text
+						self.#modifyOnAllTextCbMap(cb, (prev) => {
+							const stack = prev.stack;
+							if (stack.length) {
+								for (const idx of stack) {
+									prev.allText[idx] = `${prev.allText[idx] || ""}${text}`;
+								}
+							}
+							return prev;
+						});
+					},
+				});
 			}
 		}
 
+		// Run the transformation which will invoke the handlers and collect text chunks
 		htmlRewriter.transform(this.#htmlResponse);
 
 		const promises: Promise<void>[] = [];
 
+		// Call onOne callbacks with the concatenated text (normalize is applied earlier)
 		for (const [cb, { text }] of this.#onTextCbTrackingMap) {
-			promises.push(Promise.resolve(cb(text)));
+			if (text.length) promises.push(Promise.resolve(cb(text)));
 		}
+
+		// Call onAll callbacks with collected texts; only invoke when at least one non-empty item exists.
 		for (const [cb, { allText }] of this.#onAllTextCbTrackingMap) {
-			promises.push(Promise.resolve(cb(allText)));
+			const nonEmpty = allText.filter(Boolean);
+			if (nonEmpty.length) promises.push(Promise.resolve(cb(nonEmpty)));
 		}
 
 		await Promise.all(promises);
