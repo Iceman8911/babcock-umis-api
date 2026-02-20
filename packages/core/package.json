@@ -1,6 +1,7 @@
 {
 	"dependencies": {
-		"node-html-parser": "^7.0.2"
+		"node-html-parser": "^7.0.2",
+		"valibot": "^1.2.0"
 	},
 	"description": "Reverse-engineered api for babcock's umis portal",
 	"devDependencies": {
