@@ -279,268 +279,270 @@ export function runHTMLParserSharedTests(
 			expect(items).toEqual(["One", "Two"]);
 			expect(para).toBe("Para");
 		});
-	});
 
-	it("should extract text from deeply nested lists", async () => {
-		const html = `
-			<ul>
-				<li>Item 1
-					<ul>
-						<li>Subitem 1a</li>
-						<li>Subitem 1b
-							<ul>
-								<li>Subsubitem 1b-i</li>
-							</ul>
-						</li>
-					</ul>
-				</li>
-				<li>Item 2</li>
-			</ul>
-		`;
-		const res = new Response(html, {
-			headers: { "content-type": "text/html" },
-		});
-		const parser = await parserFactory(res);
+		it("should extract text from deeply nested lists", async () => {
+			const html = `
+				<ul>
+					<li>Item 1
+						<ul>
+							<li>Subitem 1a</li>
+							<li>Subitem 1b
+								<ul>
+									<li>Subsubitem 1b-i</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+					<li>Item 2</li>
+				</ul>
+			`;
+			const res = new Response(html, {
+				headers: { "content-type": "text/html" },
+			});
+			const parser = await parserFactory(res);
 
-		let items: string[] = [];
-		parser.onAll("li", (texts) => {
-			items = [...texts];
-		});
+			let items: string[] = [];
+			parser.onAll("li", (texts) => {
+				items = [...texts];
+			});
 
-		await parser.process();
+			await parser.process();
 
-		// Presence checks that are resilient to whitespace normalization and parser differences.
-		const normalize = (s: string) => s.replace(/\s+/g, "");
-		expect(
-			items.some((d) =>
-				normalize(d).includes(
-					normalize("Item 1Subitem 1aSubitem 1bSubsubitem 1b-i"),
+			// Presence checks that are resilient to whitespace normalization and parser differences.
+			const normalize = (s: string) => s.replace(/\s+/g, "");
+			expect(
+				items.some((d) =>
+					normalize(d).includes(
+						normalize("Item 1Subitem 1aSubitem 1bSubsubitem 1b-i"),
+					),
 				),
-			),
-		).toBe(true);
-		expect(items.some((d) => normalize(d) === normalize("Subitem 1a"))).toBe(
-			true,
-		);
-		expect(
-			items.some((d) =>
-				normalize(d).includes(normalize("Subitem 1bSubsubitem 1b-i")),
-			),
-		).toBe(true);
-		expect(
-			items.some((d) => normalize(d) === normalize("Subsubitem 1b-i")),
-		).toBe(true);
-		expect(items.some((d) => normalize(d) === normalize("Item 2"))).toBe(true);
-	});
+			).toBe(true);
+			expect(items.some((d) => normalize(d) === normalize("Subitem 1a"))).toBe(
+				true,
+			);
+			expect(
+				items.some((d) =>
+					normalize(d).includes(normalize("Subitem 1bSubsubitem 1b-i")),
+				),
+			).toBe(true);
+			expect(
+				items.some((d) => normalize(d) === normalize("Subsubitem 1b-i")),
+			).toBe(true);
+			expect(items.some((d) => normalize(d) === normalize("Item 2"))).toBe(
+				true,
+			);
+		});
 
-	it("should extract text from nested blockquotes", async () => {
-		const html = `
-			<blockquote>
-				Outer quote
+		it("should extract text from nested blockquotes", async () => {
+			const html = `
 				<blockquote>
-					Inner quote
+					Outer quote
+					<blockquote>
+						Inner quote
+					</blockquote>
 				</blockquote>
-			</blockquote>
-		`;
-		const res = new Response(html, {
-			headers: { "content-type": "text/html" },
-		});
-		const parser = await parserFactory(res);
+			`;
+			const res = new Response(html, {
+				headers: { "content-type": "text/html" },
+			});
+			const parser = await parserFactory(res);
 
-		let quotes: string[] = [];
-		parser.onAll("blockquote", (texts) => {
-			quotes = [...texts];
-		});
+			let quotes: string[] = [];
+			parser.onAll("blockquote", (texts) => {
+				quotes = [...texts];
+			});
 
-		await parser.process();
+			await parser.process();
 
-		expect(quotes.some((q) => q.includes("Outer quote"))).toBe(true);
-		expect(quotes.some((q) => q.includes("Inner quote"))).toBe(true);
-	});
-
-	it("should extract text from interleaved inline and block elements", async () => {
-		const html = `<p>Start <span>inline <b>bold</b></span> End</p>`;
-		const res = new Response(html, {
-			headers: { "content-type": "text/html" },
-		});
-		const parser = await parserFactory(res);
-
-		let pText = "";
-		parser.onOne("p", (text) => {
-			pText = text;
+			expect(quotes.some((q) => q.includes("Outer quote"))).toBe(true);
+			expect(quotes.some((q) => q.includes("Inner quote"))).toBe(true);
 		});
 
-		await parser.process();
+		it("should extract text from interleaved inline and block elements", async () => {
+			const html = `<p>Start <span>inline <b>bold</b></span> End</p>`;
+			const res = new Response(html, {
+				headers: { "content-type": "text/html" },
+			});
+			const parser = await parserFactory(res);
 
-		expect(pText.replace(/\s+/g, " ")).toContain("Start inline bold End");
-	});
+			let pText = "";
+			parser.onOne("p", (text) => {
+				pText = text;
+			});
 
-	it("should handle malformed HTML (missing end tags)", async () => {
-		const html = `<div>Open <span>Still open<div>Closed</div>`;
-		const res = new Response(html, {
-			headers: { "content-type": "text/html" },
+			await parser.process();
+
+			expect(pText.replace(/\s+/g, " ")).toContain("Start inline bold End");
 		});
-		const parser = await parserFactory(res);
 
-		let divs: string[] = [];
-		parser.onAll("div", (texts) => {
-			divs = [...texts];
+		it("should handle malformed HTML (missing end tags)", async () => {
+			const html = `<div>Open <span>Still open<div>Closed</div>`;
+			const res = new Response(html, {
+				headers: { "content-type": "text/html" },
+			});
+			const parser = await parserFactory(res);
+
+			let divs: string[] = [];
+			parser.onAll("div", (texts) => {
+				divs = [...texts];
+			});
+
+			await parser.process();
+
+			expect(divs.some((d) => d.includes("Open"))).toBe(true);
+			expect(divs.some((d) => d.includes("Closed"))).toBe(true);
 		});
 
-		await parser.process();
+		// --- Complex Selector and Realistic HTML Tests ---
 
-		expect(divs.some((d) => d.includes("Open"))).toBe(true);
-		expect(divs.some((d) => d.includes("Closed"))).toBe(true);
-	});
-
-	// --- Complex Selector and Realistic HTML Tests ---
-
-	it("should extract text using descendant selector", async () => {
-		const html = `
-			<div>
-				<span>Descendant 1</span>
+		it("should extract text using descendant selector", async () => {
+			const html = `
 				<div>
-					<span>Visible</div>
-			<script>var x = 1;</script>
-			<style>.hidden { display: none; }</style>
-		`;
-		const res = new Response(html, {
-			headers: { "content-type": "text/html" },
-		});
-		const parser = await parserFactory(res);
+					<span>Descendant 1</span>
+					<div>
+						<span>Visible</div>
+				<script>var x = 1;</script>
+				<style>.hidden { display: none; }</style>
+			`;
+			const res = new Response(html, {
+				headers: { "content-type": "text/html" },
+			});
+			const parser = await parserFactory(res);
 
-		let scriptText = "not-called";
-		let styleText = "not-called";
-		let divText = "";
-		parser.onOne("script", (text) => {
-			scriptText = text;
-		});
-		parser.onOne("style", (text) => {
-			styleText = text;
-		});
-		parser.onOne("div", (text) => {
-			divText = text;
-		});
+			let scriptText = "not-called";
+			let styleText = "not-called";
+			let divText = "";
+			parser.onOne("script", (text) => {
+				scriptText = text;
+			});
+			parser.onOne("style", (text) => {
+				styleText = text;
+			});
+			parser.onOne("div", (text) => {
+				divText = text;
+			});
 
-		await parser.process();
+			await parser.process();
 
-		// Different parsers may expose script/style text differently; assert only the important behavior:
-		// the div content should include an expected descendant text. Accept either "Visible" or "Descendant 1"
-		// as different parser implementations may normalize or reorder fragment text differently.
-		expect(/Visible|Descendant 1/.test(divText)).toBe(true);
-	});
-
-	it("should extract text from tables (headers, rows, cells)", async () => {
-		const html = `
-			<table>
-				<thead>
-					<tr><th>H1</th><th>H2</th></tr>
-				</thead>
-				<tbody>
-					<tr><td>R1C1</td><td>R1C2</td></tr>
-					<tr><td>R2C1</td><td>R2C2</td></tr>
-				</tbody>
-			</table>
-		`;
-		const res = new Response(html, {
-			headers: { "content-type": "text/html" },
-		});
-		const parser = await parserFactory(res);
-
-		let headers: string[] = [];
-		let cells: string[] = [];
-		parser.onAll("th", (texts) => {
-			headers = [...texts];
-		});
-		parser.onAll("td", (texts) => {
-			cells = [...texts];
+			// Different parsers may expose script/style text differently; assert only the important behavior:
+			// the div content should include an expected descendant text. Accept either "Visible" or "Descendant 1"
+			// as different parser implementations may normalize or reorder fragment text differently.
+			expect(/Visible|Descendant 1/.test(divText)).toBe(true);
 		});
 
-		await parser.process();
+		it("should extract text from tables (headers, rows, cells)", async () => {
+			const html = `
+				<table>
+					<thead>
+						<tr><th>H1</th><th>H2</th></tr>
+					</thead>
+					<tbody>
+						<tr><td>R1C1</td><td>R1C2</td></tr>
+						<tr><td>R2C1</td><td>R2C2</td></tr>
+					</tbody>
+				</table>
+			`;
+			const res = new Response(html, {
+				headers: { "content-type": "text/html" },
+			});
+			const parser = await parserFactory(res);
 
-		expect(headers).toEqual(["H1", "H2"]);
-		expect(cells).toEqual(["R1C1", "R1C2", "R2C1", "R2C2"]);
-	});
+			let headers: string[] = [];
+			let cells: string[] = [];
+			parser.onAll("th", (texts) => {
+				headers = [...texts];
+			});
+			parser.onAll("td", (texts) => {
+				cells = [...texts];
+			});
 
-	it("should extract text from forms (labels, textarea)", async () => {
-		const html = `
-			<form>
-				<label for="f">Label</label>
-				<input id="f" type="text" value="foo">
-				<textarea>Some text</textarea>
-			</form>
-		`;
-		const res = new Response(html, {
-			headers: { "content-type": "text/html" },
-		});
-		const parser = await parserFactory(res);
+			await parser.process();
 
-		let label = "";
-		let textarea = "";
-		parser.onOne("label", (text) => {
-			label = text;
-		});
-		parser.onOne("textarea", (text) => {
-			textarea = text;
-		});
-
-		await parser.process();
-
-		expect(label).toBe("Label");
-		expect(textarea).toBe("Some text");
-	});
-
-	it("should extract Unicode and mixed-language content", async () => {
-		const html = `<p>English 中文 عربى русский 🚀</p>`;
-		const res = new Response(html, {
-			headers: { "content-type": "text/html" },
-		});
-		const parser = await parserFactory(res);
-
-		let pText = "";
-		parser.onOne("p", (text) => {
-			pText = text;
+			expect(headers).toEqual(["H1", "H2"]);
+			expect(cells).toEqual(["R1C1", "R1C2", "R2C1", "R2C2"]);
 		});
 
-		await parser.process();
+		it("should extract text from forms (labels, textarea)", async () => {
+			const html = `
+				<form>
+					<label for="f">Label</label>
+					<input id="f" type="text" value="foo">
+					<textarea>Some text</textarea>
+				</form>
+			`;
+			const res = new Response(html, {
+				headers: { "content-type": "text/html" },
+			});
+			const parser = await parserFactory(res);
 
-		expect(pText).toContain("English");
-		expect(pText).toContain("中文");
-		expect(pText).toContain("عربى");
-		expect(pText).toContain("русский");
-		expect(pText).toContain("🚀");
-	});
+			let label = "";
+			let textarea = "";
+			parser.onOne("label", (text) => {
+				label = text;
+			});
+			parser.onOne("textarea", (text) => {
+				textarea = text;
+			});
 
-	it("should normalize whitespace and line breaks", async () => {
-		const html = `<div>   Line 1\n   Line 2   <span>  Line 3 </span>   </div>`;
-		const res = new Response(html, {
-			headers: { "content-type": "text/html" },
-		});
-		const parser = await parserFactory(res);
+			await parser.process();
 
-		let divText = "";
-		parser.onOne("div", (text) => {
-			divText = text;
-		});
-
-		await parser.process();
-
-		expect(divText.replace(/\s+/g, " ")).toContain("Line 1 Line 2 Line 3");
-	});
-
-	it("should extract text from elements with ARIA or data-* attributes", async () => {
-		const html = `<span aria-label="foo" data-info="bar">Accessible</span>`;
-		const res = new Response(html, {
-			headers: { "content-type": "text/html" },
-		});
-		const parser = await parserFactory(res);
-
-		let spanText = "";
-		parser.onOne("span", (text) => {
-			spanText = text;
+			expect(label).toBe("Label");
+			expect(textarea).toBe("Some text");
 		});
 
-		await parser.process();
+		it("should extract Unicode and mixed-language content", async () => {
+			const html = `<p>English 中文 عربى русский 🚀</p>`;
+			const res = new Response(html, {
+				headers: { "content-type": "text/html" },
+			});
+			const parser = await parserFactory(res);
 
-		expect(spanText).toBe("Accessible");
+			let pText = "";
+			parser.onOne("p", (text) => {
+				pText = text;
+			});
+
+			await parser.process();
+
+			expect(pText).toContain("English");
+			expect(pText).toContain("中文");
+			expect(pText).toContain("عربى");
+			expect(pText).toContain("русский");
+			expect(pText).toContain("🚀");
+		});
+
+		it("should normalize whitespace and line breaks", async () => {
+			const html = `<div>   Line 1\n   Line 2   <span>  Line 3 </span>   </div>`;
+			const res = new Response(html, {
+				headers: { "content-type": "text/html" },
+			});
+			const parser = await parserFactory(res);
+
+			let divText = "";
+			parser.onOne("div", (text) => {
+				divText = text;
+			});
+
+			await parser.process();
+
+			expect(divText.replace(/\s+/g, " ")).toContain("Line 1 Line 2 Line 3");
+		});
+
+		it("should extract text from elements with ARIA or data-* attributes", async () => {
+			const html = `<span aria-label="foo" data-info="bar">Accessible</span>`;
+			const res = new Response(html, {
+				headers: { "content-type": "text/html" },
+			});
+			const parser = await parserFactory(res);
+
+			let spanText = "";
+			parser.onOne("span", (text) => {
+				spanText = text;
+			});
+
+			await parser.process();
+
+			expect(spanText).toBe("Accessible");
+		});
 	});
 }
