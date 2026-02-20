@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import * as v from "valibot";
-import { MatricNumberSchema } from "./credentials";
+import { MatricNumberSchema, StudentCredentialsSchema } from "./credentials";
 
 describe("MatricNumberSchema", () => {
 	it("parses valid matric numbers", () => {
@@ -29,5 +29,44 @@ describe("MatricNumberSchema", () => {
 		expect(v.is(MatricNumberSchema, "00/0000")).toBe(true);
 		expect(v.is(MatricNumberSchema, "00/000")).toBe(false);
 		expect(v.is(MatricNumberSchema, 123)).toBe(false);
+	});
+});
+
+describe("StudentCredentialsSchema", () => {
+	it("parses and transforms valid credentials to login payload", () => {
+		const input = { pass: "hunter2", user: "22/0039" };
+		const output = v.parse(StudentCredentialsSchema, input);
+		expect(output).toEqual({ j_password: "hunter2", j_username: "22/0039" });
+	});
+
+	it("throws when user matric number is invalid", () => {
+		expect(() =>
+			v.parse(StudentCredentialsSchema, { pass: "x", user: "2/0039" }),
+		).toThrow();
+	});
+
+	it("safeParse returns false for invalid credentials and true for valid", () => {
+		const ok = v.safeParse(StudentCredentialsSchema, {
+			pass: "pw",
+			user: "21/4321",
+		});
+		expect(ok.success).toBe(true);
+		if (ok.success)
+			expect(ok.output).toEqual({ j_password: "pw", j_username: "21/4321" });
+
+		const bad = v.safeParse(StudentCredentialsSchema, {
+			pass: "pw",
+			user: "210/4321",
+		});
+		expect(bad.success).toBe(false);
+	});
+
+	it("is returns true for valid input and false for invalid", () => {
+		expect(v.is(StudentCredentialsSchema, { pass: "p", user: "00/0000" })).toBe(
+			true,
+		);
+		expect(v.is(StudentCredentialsSchema, { pass: "p", user: "00-0000" })).toBe(
+			false,
+		);
 	});
 });
