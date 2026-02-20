@@ -1,10 +1,11 @@
 import { describe, expect, it } from "bun:test";
 import * as v from "valibot";
+import { ENVIRONMENT_VARIABLES } from "../constants/env";
 import { MatricNumberSchema, StudentCredentialsSchema } from "./credentials";
 
 describe("MatricNumberSchema", () => {
 	it("parses valid matric numbers", () => {
-		const input = "22/0039";
+		const input = ENVIRONMENT_VARIABLES.UMIS_MATRIC_NO;
 		const output = v.parse(MatricNumberSchema, input);
 		expect(output).toBe(input);
 	});
@@ -34,9 +35,15 @@ describe("MatricNumberSchema", () => {
 
 describe("StudentCredentialsSchema", () => {
 	it("parses and transforms valid credentials to login payload", () => {
-		const input = { pass: "hunter2", user: "22/0039" };
+		const input = {
+			pass: "hunter2",
+			user: ENVIRONMENT_VARIABLES.UMIS_MATRIC_NO,
+		};
 		const output = v.parse(StudentCredentialsSchema, input);
-		expect(output).toEqual({ j_password: "hunter2", j_username: "22/0039" });
+		expect(output).toEqual({
+			j_password: "hunter2",
+			j_username: ENVIRONMENT_VARIABLES.UMIS_MATRIC_NO,
+		});
 	});
 
 	it("throws when user matric number is invalid", () => {
