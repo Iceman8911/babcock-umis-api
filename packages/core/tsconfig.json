@@ -3,7 +3,7 @@
 		"allowImportingTsExtensions": true,
 
 		"declaration": true,
-		"isolatedDeclarations": true,
+		// "isolatedDeclarations": true,
 		"module": "Preserve",
 		"moduleDetection": "force",
 
