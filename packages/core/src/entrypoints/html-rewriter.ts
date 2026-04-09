@@ -1,3 +1,1 @@
-export function greet(name: string): string {
-	return `Hello, ${name}!`;
-}
+import "../features/index";

@@ -34,5 +34,3 @@ export async function doesStudentExist(
 		return null;
 	}
 }
-
-doesStudentExist("22/0039");
