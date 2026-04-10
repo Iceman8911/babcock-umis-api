@@ -11,7 +11,7 @@ import {
 import type { Result } from "../models/result.types";
 import { getErrorMessage } from "../utils/error";
 
-/** FInd out wheter the given student exists
+/** Find out whether the given student exists
  *
  * @param matricNo The user's matric number
  * @returns The student identification data if exisiting, or `null` otherwise
