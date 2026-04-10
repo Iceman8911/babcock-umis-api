@@ -5,6 +5,7 @@ export const MatricNumberSchema = v.pipe(
 	v.string(),
 	v.regex(MATRIC_NUMBER_REGEX),
 	v.transform((str) => str as `${number}/${number}`),
+	v.readonly(),
 );
 export type MatricNumberInput = v.InferInput<typeof MatricNumberSchema>;
 export type MatricNumberOutput = v.InferOutput<typeof MatricNumberSchema>;
@@ -24,6 +25,7 @@ export const StudentCredentialsSchema = v.pipe(
 
 		return payload;
 	}),
+	v.readonly(),
 );
 export type StudentCredentialsInput = v.InferInput<
 	typeof StudentCredentialsSchema
