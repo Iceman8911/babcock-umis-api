@@ -14,7 +14,7 @@ import { getErrorMessage } from "../utils/error";
 /** Find out whether the given student exists
  *
  * @param matricNo The user's matric number
- * @returns The student identification data if exisiting, or `null` otherwise
+ * @returns The student identification data if exisiting
  */
 export async function doesStudentExist(
 	matricNo: MatricNumberInput,

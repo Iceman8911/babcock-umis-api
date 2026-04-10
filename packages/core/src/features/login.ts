@@ -1,5 +1,5 @@
 import * as v from "valibot";
-import { SHARED_FETCH_HEADERS } from "../constants/fetch";
+import { getFetchHeaders } from "../constants/fetch";
 import { UmisPage } from "../constants/umis-pages";
 import {
 	type UserLoginCookieOutput,
@@ -13,7 +13,7 @@ import type { Result } from "../models/result.types";
 import { getErrorMessage } from "../utils/error";
 import { doesStudentExist } from "./check-user";
 
-/** Returns the cookies if the user is logged in, else `null` */
+/** Returns the cookies if the user is logged in*/
 export async function attemptStudentLogin(
 	credentials: Readonly<StudentCredentialsInput>,
 ): Promise<Result<UserLoginCookieOutput, string>> {
@@ -26,14 +26,24 @@ export async function attemptStudentLogin(
 
 		if (!studentExistenceResult.success) return studentExistenceResult;
 
+		// Fetch the login page to get the JSESSIONID cookie, which is required for the login request
+		const loginPageResponse = await fetch(UmisPage.Login, {
+			headers: getFetchHeaders({ type: "head" }),
+			method: "HEAD",
+		});
+
+		const loginPageCookies = v.parse(
+			UserLoginCookieSchema,
+			loginPageResponse.headers.get("set-cookie"),
+		);
+
 		const request = new Request(UmisPage.SecurityCheck, {
 			body: new URLSearchParams(parsedCredentials),
-			credentials: "include",
-			headers: {
-				...SHARED_FETCH_HEADERS,
-				"Content-Type": "application/x-www-form-urlencoded",
-				Referer: UmisPage.Dashboard,
-			},
+			headers: getFetchHeaders({
+				cookie: loginPageCookies.JSESSIONID,
+				referrer: UmisPage.Dashboard,
+				type: "post",
+			}),
 			method: "POST",
 		});
 

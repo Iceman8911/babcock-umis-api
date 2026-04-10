@@ -9,6 +9,7 @@ export const UmisPage = BasicEnumBuilder.new({
 })
 	.$("SecurityCheck", "j_security_check")
 	.$("CheckUser", "user_checks")
+	.$("Login", aStudents("112"))
 	.$("Dashboard", aStudents("1"))
 	.$("SchoolInfo", aStudents("10"))
 	.$("PersonalDetails", aStudents("112"))
