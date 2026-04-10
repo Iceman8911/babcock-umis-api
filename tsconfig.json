@@ -24,6 +24,8 @@
 		// Best practices
 		"strict": true,
 		"target": "ESNext",
+
+		"types": ["bun-types"],
 		"verbatimModuleSyntax": true
 	}
 }

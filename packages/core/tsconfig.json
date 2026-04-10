@@ -20,6 +20,8 @@
 
 		"strict": true,
 		"target": "ES2023",
+
+		"types": ["bun-types"],
 		"verbatimModuleSyntax": true
 	},
 	"exclude": ["node_modules", "dist", "bunup.config.ts"],
