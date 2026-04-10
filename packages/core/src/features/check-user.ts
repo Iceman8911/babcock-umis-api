@@ -8,6 +8,8 @@ import {
 	type MatricNumberInput,
 	MatricNumberSchema,
 } from "../models/credentials";
+import type { Result } from "../models/result.types";
+import { getErrorMessage } from "../utils/error";
 
 /** FInd out wheter the given student exists
  *
@@ -16,21 +18,35 @@ import {
  */
 export async function doesStudentExist(
 	matricNo: MatricNumberInput,
-): Promise<VerifiedStudentResponseOutput | null> {
-	const url = new URL(UmisPage.CheckUser);
-	url.searchParams.append("j_username", v.parse(MatricNumberSchema, matricNo));
+): Promise<Result<VerifiedStudentResponseOutput, string>> {
+	try {
+		const url = new URL(UmisPage.CheckUser);
+		url.searchParams.append(
+			"j_username",
+			v.parse(MatricNumberSchema, matricNo),
+		);
 
-	const res = await fetch(url);
+		const res = await fetch(url);
 
-	const { output, success } = v.safeParse(
-		VerifiedUserResponseSchema,
-		await res.json(),
-	);
+		const { output, success, issues } = v.safeParse(
+			VerifiedUserResponseSchema,
+			await res.json(),
+		);
 
-	if (success) {
-		// The first item the array should be what we want
-		return output.data[0] ?? null;
-	} else {
-		return null;
+		if (success) {
+			// The first item the array should be what we want
+			const student = output.data[0];
+
+			if (!student) return { err: "Student does not exist", success: false };
+
+			return { success: true, val: student };
+		} else {
+			return {
+				err: `Parsing failed: ${issues.map((e) => e.message).join(", ")}`,
+				success: false,
+			};
+		}
+	} catch (e) {
+		return { err: getErrorMessage(e), success: false };
 	}
 }
