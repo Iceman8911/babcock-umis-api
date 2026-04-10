@@ -5,9 +5,17 @@ import { doesStudentExist } from "./check-user";
 describe(doesStudentExist.name, () => {
 	it("should return successful output for valid students", async () => {
 		const possibleStudentInfo = await doesStudentExist(
-			ENVIRONMENT_VARIABLES.UMIS_MATRIC_NO,
+			ENVIRONMENT_VARIABLES.CORRECT_UMIS_MATRIC_NO,
 		);
 
 		expect(possibleStudentInfo).not.toBeNull();
+	});
+
+	it("should return null for non-existing students", async () => {
+		const possibleStudentInfo = await doesStudentExist(
+			ENVIRONMENT_VARIABLES.WRONG_UMIS_MATRIC_NO,
+		);
+
+		expect(possibleStudentInfo).toBeNull();
 	});
 });

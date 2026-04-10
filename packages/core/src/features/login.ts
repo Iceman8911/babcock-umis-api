@@ -9,12 +9,15 @@ import {
 	type StudentCredentialsInput,
 	StudentCredentialsSchema,
 } from "../models/credentials";
+import { doesStudentExist } from "./check-user";
 
 /** Returns the cookies if the user is logged in, else `null` */
 export async function attemptStudentLogin(
-	credentials: StudentCredentialsInput,
+	credentials: Readonly<StudentCredentialsInput>,
 ): Promise<UserLoginCookieOutput | null> {
 	const parsedCredentials = v.parse(StudentCredentialsSchema, credentials);
+
+	if (!(await doesStudentExist(credentials.user))) return null;
 
 	const request = new Request(UmisPage.SecurityCheck, {
 		body: new URLSearchParams(parsedCredentials),
