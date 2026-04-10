@@ -16,13 +16,13 @@ export async function attemptStudentLogin(
 ): Promise<UserLoginCookieOutput | null> {
 	const parsedCredentials = v.parse(StudentCredentialsSchema, credentials);
 
-	const request = new Request(UmisPage.SECURITY_CHECK, {
+	const request = new Request(UmisPage.SecurityCheck, {
 		body: new URLSearchParams(parsedCredentials),
 		credentials: "include",
 		headers: {
 			...SHARED_FETCH_HEADERS,
 			"Content-Type": "application/x-www-form-urlencoded",
-			Referer: UmisPage.DASHBOARD,
+			Referer: UmisPage.Dashboard,
 		},
 		method: "POST",
 	});

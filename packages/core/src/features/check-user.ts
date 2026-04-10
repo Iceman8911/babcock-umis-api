@@ -17,7 +17,7 @@ import {
 export async function doesStudentExist(
 	matricNo: MatricNumberInput,
 ): Promise<VerifiedStudentResponseOutput | null> {
-	const url = new URL(UmisPage.CHECK_USER);
+	const url = new URL(UmisPage.CheckUser);
 	url.searchParams.append("j_username", v.parse(MatricNumberSchema, matricNo));
 
 	const res = await fetch(url);
