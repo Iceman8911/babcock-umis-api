@@ -13,8 +13,25 @@
 		"typescript": "^6.0.2"
 	},
 	"exports": {
-		"./browser": {
-			"import": "./dist/min/browser.js"
+		"./html-rewriter": {
+			"import": {
+				"default": "./dist/html-rewriter.js",
+				"types": "./dist/html-rewriter.d.ts"
+			},
+			"require": {
+				"default": "./dist/html-rewriter.cjs",
+				"types": "./dist/html-rewriter.d.cts"
+			}
+		},
+		"./node": {
+			"import": {
+				"default": "./dist/node.js",
+				"types": "./dist/node.d.ts"
+			},
+			"require": {
+				"default": "./dist/node.cjs",
+				"types": "./dist/node.d.cts"
+			}
 		},
 		"./package.json": "./package.json"
 	},
