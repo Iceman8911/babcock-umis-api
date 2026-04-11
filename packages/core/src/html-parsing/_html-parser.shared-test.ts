@@ -462,6 +462,63 @@ export function runHTMLParserSharedTests(
 			expect(cells).toEqual(["R1C1", "R1C2", "R2C1", "R2C2"]);
 		});
 
+		it("should extract table text from malformed markup", async () => {
+			const html = `
+				<div id="portletBody">
+					<table class="table">
+						<tr><td>Matric No.</td><td>22/0039</td>
+						<tr><td>Student Name</td><td>Foo</td>
+						<tr><td>Email</td><td>user@example.com</td>
+					</table>
+				</div>
+			`;
+			const res = new Response(html, {
+				headers: { "content-type": "text/html" },
+			});
+			const parser = await parserFactory(res);
+
+			let cells: string[] = [];
+			parser.onAll("#portletBody td", (texts) => {
+				cells = [...texts];
+			});
+
+			await parser.process();
+
+			expect(cells).toEqual([
+				"Matric No.",
+				"22/0039",
+				"Student Name",
+				"Foo",
+				"Email",
+				"user@example.com",
+			]);
+		});
+
+		it("should extract descendant selector text from malformed HTML containers", async () => {
+			const html = `
+				<div class="portlet-body" id="portletBody">
+					<div>
+						<span>Header</span>
+						<div><td>Orphan cell</td></div>
+					</div>
+				</div>
+			`;
+			const res = new Response(html, {
+				headers: { "content-type": "text/html" },
+			});
+			const parser = await parserFactory(res);
+
+			let bodyText = "";
+			parser.onOne("#portletBody", (text) => {
+				bodyText = text;
+			});
+
+			await parser.process();
+
+			expect(bodyText).toContain("Header");
+			expect(bodyText).toContain("Orphan cell");
+		});
+
 		it("should extract text from forms (labels, textarea)", async () => {
 			const html = `
 				<form>
