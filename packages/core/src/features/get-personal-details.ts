@@ -10,20 +10,20 @@ import {
 } from "../models/schemas/personal-details";
 import type { Result } from "../models/types/result";
 import { getErrorMessage } from "../utils/error";
-import { attemptStudentLogin } from "./login";
 
-export const getPersonalDetails = async (
-	credentials: Readonly<StudentCredentialsInput>,
-	parserConstructor: typeof HTMLParser,
-): Promise<Result<PersonalDetailsOutput, string>> => {
+interface GetPersonalDetailsArgs {
+	cookie: string;
+	parserConstructor: typeof HTMLParser;
+}
+
+export const getPersonalDetails = async ({
+	parserConstructor,
+	cookie,
+}: GetPersonalDetailsArgs): Promise<Result<PersonalDetailsOutput, string>> => {
 	try {
-		const loggedInResponse = await attemptStudentLogin(credentials);
-
-		if (!loggedInResponse.success) return loggedInResponse;
-
 		const personalDetailsResponse = await fetch(UmisPage.PersonalDetails, {
 			headers: getFetchHeaders({
-				cookie: loggedInResponse.val.JSESSIONID,
+				cookie,
 				referrer: UmisPage.PersonalDetails,
 				type: "get",
 			}),

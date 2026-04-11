@@ -16,7 +16,7 @@ import { getErrorMessage } from "../utils/error";
  * @param matricNo The user's matric number
  * @returns The student identification data if exisiting
  */
-export async function doesStudentExist(
+export async function isStudentValid(
 	matricNo: MatricNumberInput,
 ): Promise<Result<VerifiedStudentResponseOutput, string>> {
 	try {

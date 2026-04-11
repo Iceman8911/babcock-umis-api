@@ -11,7 +11,7 @@ import {
 } from "../models/schemas/credentials";
 import type { Result } from "../models/types/result";
 import { getErrorMessage } from "../utils/error";
-import { doesStudentExist } from "./check-user";
+import { isStudentValid } from "./check-user";
 
 /** Returns the cookies if the user is logged in.
  *
@@ -25,7 +25,7 @@ export async function attemptStudentLogin(
 	try {
 		const parsedCredentials = v.parse(StudentCredentialsSchema, credentials);
 
-		const studentExistenceResult = await doesStudentExist(
+		const studentExistenceResult = await isStudentValid(
 			parsedCredentials.j_username,
 		);
 

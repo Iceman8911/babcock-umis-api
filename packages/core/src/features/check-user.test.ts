@@ -1,10 +1,10 @@
 import { describe, expect, it } from "bun:test";
 import { ENVIRONMENT_VARIABLES } from "../constants/env";
-import { doesStudentExist } from "./check-user";
+import { isStudentValid } from "./check-user";
 
-describe(doesStudentExist.name, () => {
+describe(isStudentValid.name, () => {
 	it("should return successful output for valid students", async () => {
-		const result = await doesStudentExist(
+		const result = await isStudentValid(
 			ENVIRONMENT_VARIABLES.CORRECT_UMIS_MATRIC_NO,
 		);
 
@@ -17,7 +17,7 @@ describe(doesStudentExist.name, () => {
 	});
 
 	it("should return null for non-existing students", async () => {
-		const result = await doesStudentExist(
+		const result = await isStudentValid(
 			ENVIRONMENT_VARIABLES.WRONG_UMIS_MATRIC_NO,
 		);
 
