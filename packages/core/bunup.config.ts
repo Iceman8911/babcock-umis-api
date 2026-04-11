@@ -3,17 +3,19 @@ import { defineConfig } from "bunup";
 export default defineConfig([
 	{
 		entry: "src/entrypoints/node.ts",
+		exports: true,
 		format: ["esm", "cjs"],
 		name: "node",
+		outDir: "dist/node",
+		packages: "bundle",
 	},
 	{
+		clean: false,
 		entry: "src/entrypoints/html-rewriter.ts",
-		format: ["esm"],
+		exports: true,
+		format: ["esm", "cjs"],
 		name: "html-rewriter",
-	},
-	{
-		entry: "src/entrypoints/browser.ts",
-		format: ["esm", "iife"],
-		name: "browser",
+		outDir: "dist/html-rewriter",
+		packages: "bundle",
 	},
 ]);

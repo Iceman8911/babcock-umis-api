@@ -1,35 +1,28 @@
 {
 	"dependencies": {
 		"better-ts-enum": "^0.5.0",
+		"dotenv": "^17.4.1",
 		"node-html-parser": "^7.0.2",
 		"valibot": "^1.2.0"
 	},
 	"description": "Reverse-engineered api for babcock's umis portal",
 	"devDependencies": {
 		"@biomejs/biome": "2.4.10",
-		"@happy-dom/global-registrator": "^20.6.1",
 		"@types/bun": "^1.3.11",
 		"bunup": "^0.16.26",
 		"typescript": "^6.0.2"
 	},
 	"exports": {
 		"./browser": {
-			"import": "./dist/browser.js",
-			"types": "./dist/browser.d.ts"
-		},
-		"./html-rewriter": {
-			"import": "./dist/html-rewriter.js",
-			"types": "./dist/html-rewriter.d.ts"
-		},
-		"./node": {
-			"import": "./dist/node.js",
-			"require": "./dist/node.cjs",
-			"types": "./dist/node.d.ts"
+			"import": "./dist/min/browser.js"
 		},
 		"./package.json": "./package.json"
 	},
 	"files": [
-		"dist"
+		"dist",
+		"dist/node",
+		"dist/html-rewriter",
+		"dist/min"
 	],
 	"license": "MIT",
 	"name": "@packages/core",
@@ -46,7 +39,7 @@
 		"check": "biome check --write",
 		"check-types": "tsc --noEmit",
 		"dev": "bunup --watch",
-		"test": "bun test"
+		"test": "bun test --timeout=10000"
 	},
 	"type": "module",
 	"version": "0.1.0"
