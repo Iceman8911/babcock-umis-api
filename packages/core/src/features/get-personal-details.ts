@@ -1,14 +1,14 @@
 import * as v from "valibot";
 import { getFetchHeaders } from "../constants/fetch";
 import { UmisPage } from "../constants/umis-pages";
-import type { StudentCredentialsInput } from "../models/credentials";
-import type HTMLParser from "../models/html-parser";
+import type HTMLParser from "../models/classes/html-parser";
+import type { StudentCredentialsInput } from "../models/schemas/credentials";
 import {
 	type PersonalDetailsInput,
 	type PersonalDetailsOutput,
 	PersonalDetailsSchema,
-} from "../models/personal-details";
-import type { Result } from "../models/result.types";
+} from "../models/schemas/personal-details";
+import type { Result } from "../models/types/result";
 import { getErrorMessage } from "../utils/error";
 import { attemptStudentLogin } from "./login";
 

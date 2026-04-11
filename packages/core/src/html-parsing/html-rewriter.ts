@@ -1,15 +1,14 @@
 import HTMLParser, {
 	type OnAllTextCb,
 	type OnTextCb,
-} from "../models/html-parser";
+} from "../models/classes/html-parser";
 import { getOrInsert } from "../utils/map";
 
 interface OnTextCbTrackingData {
-	/** Combined text to pass to the callback */
-	text: string;
-
 	/** Amount of times a matched element for this callback's css selector is matched */
 	count: number;
+	/** Combined text to pass to the callback */
+	text: string;
 }
 
 interface OnAllTextCbTrackingData {

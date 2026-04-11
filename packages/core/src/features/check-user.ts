@@ -3,12 +3,12 @@ import { UmisPage } from "../constants/umis-pages";
 import {
 	type VerifiedStudentResponseOutput,
 	VerifiedUserResponseSchema,
-} from "../models/check-user";
+} from "../models/schemas/check-user";
 import {
 	type MatricNumberInput,
 	MatricNumberSchema,
-} from "../models/credentials";
-import type { Result } from "../models/result.types";
+} from "../models/schemas/credentials";
+import type { Result } from "../models/types/result";
 import { getErrorMessage } from "../utils/error";
 
 /** Find out whether the given student exists

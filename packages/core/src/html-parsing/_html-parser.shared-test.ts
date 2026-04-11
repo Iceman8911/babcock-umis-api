@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
-import type HTMLParser from "../models/html-parser";
+import type HTMLParser from "../models/classes/html-parser";
 import { _SAMPLE_HTML_RESPONSE } from "./_shared";
 
 /**

@@ -4,12 +4,12 @@ import { UmisPage } from "../constants/umis-pages";
 import {
 	type UserLoginCookieOutput,
 	UserLoginCookieSchema,
-} from "../models/cookie";
+} from "../models/schemas/cookie";
 import {
 	type StudentCredentialsInput,
 	StudentCredentialsSchema,
-} from "../models/credentials";
-import type { Result } from "../models/result.types";
+} from "../models/schemas/credentials";
+import type { Result } from "../models/types/result";
 import { getErrorMessage } from "../utils/error";
 import { doesStudentExist } from "./check-user";
 

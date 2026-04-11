@@ -1,5 +1,5 @@
 import * as v from "valibot";
-import { MATRIC_NUMBER_REGEX } from "../constants/regex";
+import { MATRIC_NUMBER_REGEX } from "../../constants/regex";
 
 export const MatricNumberSchema = v.pipe(
 	v.string(),

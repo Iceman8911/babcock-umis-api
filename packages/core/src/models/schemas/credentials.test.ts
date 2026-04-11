@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import * as v from "valibot";
-import { ENVIRONMENT_VARIABLES } from "../constants/env";
+import { ENVIRONMENT_VARIABLES } from "../../constants/env";
 import { MatricNumberSchema, StudentCredentialsSchema } from "./credentials";
 
 describe("MatricNumberSchema", () => {

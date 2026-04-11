@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import HTMLRewriterHTMLParser from "../html-parsing/html-rewriter";
 import NodeHTMLParser from "../html-parsing/node";
-import type HTMLParser from "../models/html-parser";
+import type HTMLParser from "../models/classes/html-parser";
 import { CORRECT_LOGIN_PAYLOAD, WRONG_LOGIN_PAYLOAD } from "./_shared.test";
 import { getPersonalDetails } from "./get-personal-details";
 

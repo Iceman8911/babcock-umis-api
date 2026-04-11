@@ -1,5 +1,5 @@
 import * as v from "valibot";
-import { normalizeStringToCapitalCase } from "../utils/string";
+import { normalizeStringToCapitalCase } from "../../utils/string";
 import { ParseBooleanSchema, ParseIntegerSchema } from "./coercion";
 import { MatricNumberSchema } from "./credentials";
 import { EmailSchema } from "./email";
