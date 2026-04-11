@@ -13,7 +13,12 @@ import type { Result } from "../models/result.types";
 import { getErrorMessage } from "../utils/error";
 import { doesStudentExist } from "./check-user";
 
-/** Returns the cookies if the user is logged in*/
+/** Returns the cookies if the user is logged in.
+ *
+ * Flow:
+ *
+ * Get cookie from login page -> Use cookie and credentials to attempt login -> If login is successful, return the cookies from the response
+ */
 export async function attemptStudentLogin(
 	credentials: Readonly<StudentCredentialsInput>,
 ): Promise<Result<UserLoginCookieOutput, string>> {
@@ -28,33 +33,57 @@ export async function attemptStudentLogin(
 
 		// Fetch the login page to get the JSESSIONID cookie, which is required for the login request
 		const loginPageResponse = await fetch(UmisPage.Login, {
-			headers: getFetchHeaders({ type: "head" }),
-			method: "HEAD",
+			headers: getFetchHeaders({ type: "get" }),
+			method: "GET",
 		});
 
-		const loginPageCookies = v.parse(
-			UserLoginCookieSchema,
-			loginPageResponse.headers.get("set-cookie"),
-		);
+		if (!loginPageResponse.ok)
+			return {
+				err: `Failed to fetch login page: ${loginPageResponse.status} ${loginPageResponse.statusText}`,
+				success: false,
+			};
 
-		const request = new Request(UmisPage.SecurityCheck, {
+		const loginPageSetCookie = loginPageResponse.headers.get("set-cookie");
+
+		if (!loginPageSetCookie)
+			return {
+				err: "Login page did not return an initial session cookie",
+				success: false,
+			};
+
+		const loginPageCookies = v.parse(UserLoginCookieSchema, loginPageSetCookie);
+
+		// This should return a redirect to the authenticated dashboard
+		const { status, headers } = await fetch(UmisPage.SecurityCheck, {
 			body: new URLSearchParams(parsedCredentials),
 			headers: getFetchHeaders({
 				cookie: loginPageCookies.JSESSIONID,
-				referrer: UmisPage.Dashboard,
+				referrer: UmisPage.Login,
 				type: "post",
 			}),
 			method: "POST",
+			redirect: "manual",
 		});
 
-		const res = await fetch(request);
+		if (!(status >= 300 && status < 400)) {
+			return {
+				err: `Invalid credentials or cookie; expected redirect but got ${status}`,
+				success: false,
+			};
+		}
 
-		return res.ok
-			? {
-					success: true,
-					val: v.parse(UserLoginCookieSchema, res.headers.get("set-cookie")),
-				}
-			: { err: "Login failed", success: false };
+		const authenticatedCookie = headers.get("set-cookie");
+
+		if (!authenticatedCookie)
+			return {
+				err: "Login succeeded but authenticated cookie was not returned",
+				success: false,
+			};
+
+		return {
+			success: true,
+			val: v.parse(UserLoginCookieSchema, authenticatedCookie),
+		};
 	} catch (e) {
 		return { err: getErrorMessage(e), success: false };
 	}

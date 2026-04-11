@@ -8,10 +8,10 @@ describe(doesStudentExist.name, () => {
 			ENVIRONMENT_VARIABLES.CORRECT_UMIS_MATRIC_NO,
 		);
 
-		expect(result.success).toBe(true);
-
 		if (!result.success)
 			throw Error(`Expected success but got error: ${result.err}`);
+
+		expect(result.success).toBe(true);
 
 		expect(result.success).toBeDefined();
 	});
@@ -21,9 +21,9 @@ describe(doesStudentExist.name, () => {
 			ENVIRONMENT_VARIABLES.WRONG_UMIS_MATRIC_NO,
 		);
 
-		expect(result.success).toBe(false);
-
 		if (result.success) throw Error("Expected failure but got success");
+
+		expect(result.success).toBe(false);
 
 		expect(result.err).toBeDefined();
 	});
