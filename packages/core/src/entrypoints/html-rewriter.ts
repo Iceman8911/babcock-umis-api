@@ -1,8 +1,16 @@
-import { getPersonalDetails as _getPersonalDetails } from "../features/index";
+import * as features from "../features/index";
 import HTMLRewriterHTMLParser from "../html-parsing/html-rewriter";
+import UmisApiStudentClient from "../models/classes/umis-api-client";
+import type { PersonalDetailsOutput } from "../models/schemas/personal-details";
+import type { Result } from "../models/types/result";
 
-export const getPersonalDetails = (
-	credentials: Parameters<typeof _getPersonalDetails>[0],
-) => _getPersonalDetails(credentials, HTMLRewriterHTMLParser);
-
-export { attemptStudentLogin, doesStudentExist } from "../features/index";
+export class HtmlRewriterUmisApiStudentClient extends UmisApiStudentClient {
+	override async getPersonalDetails(): Promise<
+		Result<PersonalDetailsOutput, string>
+	> {
+		return features.getPersonalDetails({
+			cookie: await this._getCookie(),
+			parserConstructor: HTMLRewriterHTMLParser,
+		});
+	}
+}
