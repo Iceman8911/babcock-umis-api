@@ -4,8 +4,12 @@ import { BasicEnumBuilder } from "better-ts-enum/basic-enum";
 const aStudents = <T extends string>(view: T) =>
 	`a_students.jsp?view=${view}:0` as const;
 
+const UmisPagePrefix = "https://umis.babcock.edu.ng/babcock/";
+
+export const UmisStudentsPagePrefix = `${UmisPagePrefix}a_students.jsp`;
+
 export const UmisPage = BasicEnumBuilder.new({
-	prefix: "https://umis.babcock.edu.ng/babcock/",
+	prefix: UmisPagePrefix,
 })
 	.$("SecurityCheck", "j_security_check")
 	.$("CheckUser", "user_checks")
