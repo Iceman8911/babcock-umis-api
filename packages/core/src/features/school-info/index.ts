@@ -1,10 +1,14 @@
 import { getFetchHeaders } from "../../constants/fetch";
 import { UmisPage } from "../../constants/umis-pages";
+import type { Result } from "../../models/types/result";
 import { fetchUmisJsonForPage } from "../../utils/umis-json";
 import type { GetterArgs } from "../shared/_shared";
-import { FetchedSchoolInfoSchema } from "./schema";
+import { FetchedSchoolInfoSchema, type ResolvedSchoolInfo } from "./schema";
 
-export const getSchoolDetails = async ({ cookie, mocks }: GetterArgs) => {
+export const getSchoolDetails = async ({
+	cookie,
+	mocks,
+}: GetterArgs): Promise<Result<ResolvedSchoolInfo[], string>> => {
 	const fetcher = mocks?.fetch ?? globalThis.fetch;
 
 	const schoolInfoPageRes = await fetcher(UmisPage.SchoolInfo, {

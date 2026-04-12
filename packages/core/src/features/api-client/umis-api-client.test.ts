@@ -24,7 +24,7 @@ const { default: UmisApiStudentClient } = await import("./umis-api-client");
 
 describe("UmisApiStudentClient cache refresh", () => {
 	class TestUmisApiStudentClient extends UmisApiStudentClient {
-		async getPersonalDetails(): Promise<never> {
+		async getPersonalInfo(): Promise<never> {
 			throw new Error("Not used in cache refresh tests");
 		}
 

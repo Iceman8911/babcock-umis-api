@@ -5,6 +5,7 @@ import type { Result } from "../../models/types/result";
 import { attemptStudentLogin, isStudentValid } from "..";
 import type { VerifiedStudentResponseOutput } from "../check-user/schema";
 import type { ScrapedPersonalDetailsOutput } from "../personal-details/schema";
+import type { ResolvedSchoolInfo } from "../school-info/schema";
 
 export default abstract class UmisApiStudentClient {
 	/** Cookie cache that must be refreshed every 15 minutes */
@@ -52,7 +53,11 @@ export default abstract class UmisApiStudentClient {
 		return isStudentValid(this._creds.user);
 	}
 
-	abstract getPersonalDetails(): Promise<
+	/** Returns the public student bio */
+	abstract getPersonalInfo(): Promise<
 		Result<ScrapedPersonalDetailsOutput, string>
 	>;
+
+	/** Returns a list of the available schools and links to their umis pages */
+	abstract getSchoolInfo(): Promise<Result<ResolvedSchoolInfo[], string>>;
 }

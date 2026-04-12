@@ -13,7 +13,7 @@ describe("HtmlRewriterUmisApiStudentClient", () => {
 			const validityResult = await client.isStudentValid();
 			expect(validityResult.success).toBeTrue();
 
-			const personalDetailsResult = await client.getPersonalDetails();
+			const personalDetailsResult = await client.getPersonalInfo();
 			expect(personalDetailsResult.success).toBeTrue();
 
 			if (!personalDetailsResult.success) {
