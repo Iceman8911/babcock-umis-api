@@ -9,23 +9,27 @@ import {
 	type ScrapedPersonalDetailsOutput,
 	ScrapedPersonalDetailsSchema,
 } from "../models/schemas/personal-details";
+import type { Mocks } from "../models/types/mocks";
 import type { Result } from "../models/types/result";
 import { getErrorMessage } from "../utils/error";
 import { fetchUmisJsonForPage } from "../utils/umis-json";
 
 interface GetPersonalDetailsArgs {
 	cookie: string;
+	mocks?: Mocks;
 	parserConstructor: typeof HTMLParser;
 }
 
 export const getPersonalDetails = async ({
 	parserConstructor,
 	cookie,
+	mocks,
 }: GetPersonalDetailsArgs): Promise<
 	Result<ScrapedPersonalDetailsOutput, string>
 > => {
 	try {
-		const personalDetailsResponse = await fetch(UmisPage.PersonalDetails, {
+		const fetcher = mocks?.fetch ?? globalThis.fetch;
+		const personalDetailsResponse = await fetcher(UmisPage.PersonalDetails, {
 			headers: getFetchHeaders({
 				cookie,
 				referrer: UmisPage.PersonalDetails,
@@ -43,6 +47,7 @@ export const getPersonalDetails = async ({
 		const parsedJsonResult = await fetchUmisJsonForPage(
 			cookie,
 			FetchedPersonalDetailsSchema,
+			{ fetch: fetcher },
 		);
 
 		if (parsedJsonResult.success)
