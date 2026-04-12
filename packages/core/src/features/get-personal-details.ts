@@ -1,32 +1,22 @@
 import * as v from "valibot";
 import { getFetchHeaders } from "../constants/fetch";
 import { UmisPage } from "../constants/umis-pages";
-import type HTMLParser from "../models/classes/html-parser";
-import type { StudentCredentialsInput } from "../models/schemas/credentials";
 import {
 	FetchedPersonalDetailsSchema,
 	type ScrapedPersonalDetailsInput,
 	type ScrapedPersonalDetailsOutput,
 	ScrapedPersonalDetailsSchema,
 } from "../models/schemas/personal-details";
-import type { Mocks } from "../models/types/mocks";
 import type { Result } from "../models/types/result";
 import { getErrorMessage } from "../utils/error";
 import { fetchUmisJsonForPage } from "../utils/umis-json";
-
-interface GetPersonalDetailsArgs {
-	cookie: string;
-	mocks?: Mocks;
-	parserConstructor: typeof HTMLParser;
-}
+import type { GetterArgs } from "./_shared";
 
 export const getPersonalDetails = async ({
 	parserConstructor,
 	cookie,
 	mocks,
-}: GetPersonalDetailsArgs): Promise<
-	Result<ScrapedPersonalDetailsOutput, string>
-> => {
+}: GetterArgs): Promise<Result<ScrapedPersonalDetailsOutput, string>> => {
 	try {
 		const fetcher = mocks?.fetch ?? globalThis.fetch;
 		const personalDetailsResponse = await fetcher(UmisPage.PersonalDetails, {
