@@ -8,7 +8,7 @@ import {
 	UniversityLevelSchema,
 } from "./university-level";
 
-interface ResolvedPersonalDetails {
+export interface ResolvedPersonalDetails {
 	readonly accountNo: string;
 	readonly address: string;
 	readonly country: string;
@@ -222,9 +222,3 @@ export const FetchedPersonalDetailsSchema: v.GenericSchema<
 		},
 	),
 );
-export type FetchedPersonalDetailsInput = v.InferInput<
-	typeof FetchedPersonalDetailsSchema
->;
-export type FetchedPersonalDetailsOutput = v.InferOutput<
-	typeof FetchedPersonalDetailsSchema
->;

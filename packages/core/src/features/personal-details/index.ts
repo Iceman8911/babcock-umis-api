@@ -4,19 +4,18 @@ import { UmisPage } from "../../constants/umis-pages";
 import type { Result } from "../../models/types/result";
 import { getErrorMessage } from "../../utils/error";
 import { fetchUmisJsonForPage } from "../../utils/umis-json";
-import type { GetterArgs } from "../shared/_shared";
+import type { UmisDataGetterFunction } from "../shared/_shared";
 import {
 	FetchedPersonalDetailsSchema,
+	type ResolvedPersonalDetails,
 	type ScrapedPersonalDetailsInput,
 	type ScrapedPersonalDetailsOutput,
 	ScrapedPersonalDetailsSchema,
 } from "./schema";
 
-export const getPersonalDetails = async ({
-	parserConstructor,
-	cookie,
-	mocks,
-}: GetterArgs): Promise<Result<ScrapedPersonalDetailsOutput, string>> => {
+export const getPersonalDetails: UmisDataGetterFunction<
+	ResolvedPersonalDetails
+> = async ({ parserConstructor, cookie, mocks }) => {
 	try {
 		const fetcher = mocks?.fetch ?? globalThis.fetch;
 		const personalDetailsResponse = await fetcher(UmisPage.PersonalDetails, {
