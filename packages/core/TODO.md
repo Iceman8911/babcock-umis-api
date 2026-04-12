@@ -1,0 +1,1 @@
+- [ ] Add attribute extraction to the html parsers.
