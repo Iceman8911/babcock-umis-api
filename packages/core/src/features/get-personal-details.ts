@@ -4,12 +4,14 @@ import { UmisPage } from "../constants/umis-pages";
 import type HTMLParser from "../models/classes/html-parser";
 import type { StudentCredentialsInput } from "../models/schemas/credentials";
 import {
-	type PersonalDetailsInput,
-	type PersonalDetailsOutput,
-	PersonalDetailsSchema,
+	FetchedPersonalDetailsSchema,
+	type ScrapedPersonalDetailsInput,
+	type ScrapedPersonalDetailsOutput,
+	ScrapedPersonalDetailsSchema,
 } from "../models/schemas/personal-details";
 import type { Result } from "../models/types/result";
 import { getErrorMessage } from "../utils/error";
+import { fetchUmisJsonForPage } from "../utils/umis-json";
 
 interface GetPersonalDetailsArgs {
 	cookie: string;
@@ -19,7 +21,9 @@ interface GetPersonalDetailsArgs {
 export const getPersonalDetails = async ({
 	parserConstructor,
 	cookie,
-}: GetPersonalDetailsArgs): Promise<Result<PersonalDetailsOutput, string>> => {
+}: GetPersonalDetailsArgs): Promise<
+	Result<ScrapedPersonalDetailsOutput, string>
+> => {
 	try {
 		const personalDetailsResponse = await fetch(UmisPage.PersonalDetails, {
 			headers: getFetchHeaders({
@@ -35,6 +39,21 @@ export const getPersonalDetails = async ({
 				success: false,
 			};
 
+		// Try the json method first. Since we've requested the personal details page, the data here should the same as the one we will get from scraping the HTML.
+		const parsedJsonResult = await fetchUmisJsonForPage(
+			cookie,
+			FetchedPersonalDetailsSchema,
+		);
+
+		if (parsedJsonResult.success)
+			return { success: true, val: parsedJsonResult.output };
+
+		console.log(
+			"Failed to parse JSON response, falling back to HTML parsing. Error:",
+			parsedJsonResult.issues,
+		);
+
+		// Fallback to html parsing
 		const personalDetailsHtml = await personalDetailsResponse.text();
 
 		const parser = await parserConstructor.init(
@@ -43,7 +62,7 @@ export const getPersonalDetails = async ({
 			}),
 		);
 
-		const elements: PersonalDetailsInput = [];
+		const elements: ScrapedPersonalDetailsInput = [];
 
 		parser.onAll("td", (texts) => {
 			for (const text of texts) {
@@ -54,7 +73,10 @@ export const getPersonalDetails = async ({
 
 		await parser.process();
 
-		return { success: true, val: v.parse(PersonalDetailsSchema, elements) };
+		return {
+			success: true,
+			val: v.parse(ScrapedPersonalDetailsSchema, elements),
+		};
 	} catch (e) {
 		return { err: getErrorMessage(e), success: false };
 	}

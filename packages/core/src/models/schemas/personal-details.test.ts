@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import * as v from "valibot";
-import { PersonalDetailsSchema } from "./personal-details";
+import { ScrapedPersonalDetailsSchema } from "./personal-details";
 
 describe("PersonalDetailsSchema", () => {
 	it("should parse a realistic personal details row array", () => {
@@ -49,7 +49,7 @@ describe("PersonalDetailsSchema", () => {
 			"chrishconmedical@gmail.com",
 		];
 
-		const result = v.parse(PersonalDetailsSchema, input);
+		const result = v.parse(ScrapedPersonalDetailsSchema, input);
 
 		expect(result.matricNo).toBe("22/0039");
 		expect(result.name).toBe("OKOROCHA, CONRAD MADUAWUCHI");
@@ -103,7 +103,7 @@ describe("PersonalDetailsSchema", () => {
 			"chrishconmedical@gmail.com",
 		];
 
-		const result = v.parse(PersonalDetailsSchema, input);
+		const result = v.parse(ScrapedPersonalDetailsSchema, input);
 
 		expect(result.etranzactCardNo).toBe(7079896992195687);
 		expect(result.email).toBe("chrishconmedical@gmail.com");
@@ -111,6 +111,8 @@ describe("PersonalDetailsSchema", () => {
 
 	it("should reject invalid personal detail arrays", () => {
 		const input = ["Matric No.", "22/0039", "Student Name", "OKOROCHA"]; // missing required fields
-		expect(v.safeParse(PersonalDetailsSchema, input).success).toBe(false);
+		expect(v.safeParse(ScrapedPersonalDetailsSchema, input).success).toBe(
+			false,
+		);
 	});
 });

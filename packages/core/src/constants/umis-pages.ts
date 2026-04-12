@@ -41,5 +41,8 @@ export const UmisPage = BasicEnumBuilder.new({
 	.$("FinanceClearance", aStudents("40"))
 	.$("PrintCourseForm", aStudents("50"))
 	.$("PayForPreviousSemester", aStudents("44"))
+
+	// Misc
+	.$("Json", "jsondata")
 	.build();
 export type UmisPage = typeof UmisPage.$.infer.values;

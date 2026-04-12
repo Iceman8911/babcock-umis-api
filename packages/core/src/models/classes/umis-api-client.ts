@@ -2,7 +2,7 @@
 import { attemptStudentLogin, isStudentValid } from "../../features";
 import type { VerifiedStudentResponseOutput } from "../schemas/check-user";
 import type { StudentCredentialsInput } from "../schemas/credentials";
-import type { PersonalDetailsOutput } from "../schemas/personal-details";
+import type { ScrapedPersonalDetailsOutput } from "../schemas/personal-details";
 import type { Result } from "../types/result";
 
 export default abstract class UmisApiStudentClient {
@@ -51,5 +51,7 @@ export default abstract class UmisApiStudentClient {
 		return isStudentValid(this._creds.user);
 	}
 
-	abstract getPersonalDetails(): Promise<Result<PersonalDetailsOutput, string>>;
+	abstract getPersonalDetails(): Promise<
+		Result<ScrapedPersonalDetailsOutput, string>
+	>;
 }
