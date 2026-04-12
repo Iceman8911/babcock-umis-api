@@ -1,7 +1,7 @@
+import UmisApiStudentClient from "../features/api-client/umis-api-client";
 import * as features from "../features/index";
-import NodeHTMLParser from "../html-parsing/node";
-import UmisApiStudentClient from "../models/classes/umis-api-client";
-import type { ScrapedPersonalDetailsOutput } from "../models/schemas/personal-details";
+import NodeHTMLParser from "../features/parsers/node-html-parser";
+import type { ScrapedPersonalDetailsOutput } from "../features/personal-details/schema";
 import type { Result } from "../models/types/result";
 
 export class NodeUmisApiStudentClient extends UmisApiStudentClient {

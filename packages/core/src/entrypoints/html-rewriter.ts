@@ -1,7 +1,7 @@
+import UmisApiStudentClient from "../features/api-client/umis-api-client";
 import * as features from "../features/index";
-import HTMLRewriterHTMLParser from "../html-parsing/html-rewriter";
-import UmisApiStudentClient from "../models/classes/umis-api-client";
-import type { ScrapedPersonalDetailsOutput } from "../models/schemas/personal-details";
+import HTMLRewriterHTMLParser from "../features/parsers/html-rewriter";
+import type { ScrapedPersonalDetailsOutput } from "../features/personal-details/schema";
 import type { Result } from "../models/types/result";
 
 export class HtmlRewriterUmisApiStudentClient extends UmisApiStudentClient {

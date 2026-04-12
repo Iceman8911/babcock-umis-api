@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { CORRECT_LOGIN_PAYLOAD } from "../features/_shared.test";
+import { CORRECT_LOGIN_PAYLOAD } from "../features/shared/_shared.test";
 import { NodeUmisApiStudentClient } from "./node";
 
 describe("NodeUmisApiStudentClient", () => {
