@@ -1,5 +1,5 @@
 import { type HTMLElement as ParsedHTMLElement, parse } from "node-html-parser";
-import HTMLParser from "../models/classes/html-parser";
+import HTMLParser from "./html-parser";
 
 export default class NodeHTMLParser extends HTMLParser {
 	#pseudoDom: ParsedHTMLElement;

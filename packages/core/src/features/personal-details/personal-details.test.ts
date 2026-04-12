@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import * as v from "valibot";
-import { ScrapedPersonalDetailsSchema } from "./personal-details";
+import { ScrapedPersonalDetailsSchema } from "./schema";
 
 describe("PersonalDetailsSchema", () => {
 	it("should parse a realistic personal details row array", () => {

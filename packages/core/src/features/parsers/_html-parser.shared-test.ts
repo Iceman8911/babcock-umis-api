@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
-import type HTMLParser from "../models/classes/html-parser";
 import { _SAMPLE_HTML_RESPONSE } from "./_shared";
+import type HTMLParser from "./html-parser";
 
 /**
  * Shared test suite for HTML parsers.

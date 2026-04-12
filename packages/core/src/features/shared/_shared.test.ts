@@ -1,5 +1,5 @@
-import { ENVIRONMENT_VARIABLES } from "../constants/env";
-import type { StudentCredentialsInput } from "../models/credentials";
+import { ENVIRONMENT_VARIABLES } from "../../constants/env";
+import type { StudentCredentialsInput } from "../../models/schemas/credentials";
 
 export const CORRECT_LOGIN_PAYLOAD = {
 	pass: ENVIRONMENT_VARIABLES.CORRECT_UMIS_PASSWORD,

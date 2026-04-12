@@ -1,9 +1,10 @@
 /** biome-ignore-all lint/complexity/noThisInStatic: <I use `this` to refer to any implementation's constructor, rather than the class itself> */
-import { attemptStudentLogin, isStudentValid } from "../../features";
-import type { VerifiedStudentResponseOutput } from "../schemas/check-user";
-import type { StudentCredentialsInput } from "../schemas/credentials";
-import type { ScrapedPersonalDetailsOutput } from "../schemas/personal-details";
-import type { Result } from "../types/result";
+
+import type { StudentCredentialsInput } from "../../models/schemas/credentials";
+import type { Result } from "../../models/types/result";
+import { attemptStudentLogin, isStudentValid } from "..";
+import type { VerifiedStudentResponseOutput } from "../check-user/schema";
+import type { ScrapedPersonalDetailsOutput } from "../personal-details/schema";
 
 export default abstract class UmisApiStudentClient {
 	/** Cookie cache that must be refreshed every 15 minutes */
