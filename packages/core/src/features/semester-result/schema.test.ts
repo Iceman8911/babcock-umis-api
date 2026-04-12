@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import * as v from "valibot";
 import { UmisStudentsPagePrefix } from "../../constants/umis-pages";
-import { FetchedAllSemesterResultsSchema } from "./schema";
+import { FetchedAllSemesterResultsSummarySchema } from "./schema";
 
 describe("FetchedAllSemesterResultsSchema", () => {
 	it("should parse and transform fetched semester result entries", () => {
@@ -18,7 +18,7 @@ describe("FetchedAllSemesterResultsSchema", () => {
 			},
 		];
 
-		const parsed = v.parse(FetchedAllSemesterResultsSchema, fetched);
+		const parsed = v.parse(FetchedAllSemesterResultsSummarySchema, fetched);
 
 		expect(parsed).toBeInstanceOf(Array);
 		expect(parsed[0]).toBeDefined();
@@ -36,8 +36,8 @@ describe("FetchedAllSemesterResultsSchema", () => {
 	it("should reject invalid semester result shapes", () => {
 		const bad = [{ credit: "12", quarterid: "not-a-link" }];
 
-		expect(v.safeParse(FetchedAllSemesterResultsSchema, bad).success).toBe(
-			false,
-		);
+		expect(
+			v.safeParse(FetchedAllSemesterResultsSummarySchema, bad).success,
+		).toBe(false);
 	});
 });

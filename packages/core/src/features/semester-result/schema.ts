@@ -16,7 +16,7 @@ type Session = `${Year}/${YearWithSessionDenominator}`;
 /** Matches <a href='?view=19:0:0&data=431025'>2022/2023.1</a>, and captures `2022/2023.1` */
 const SESSION_REGEX = /<a.*>(\d+\/\d+\.?\d?)/;
 
-export type ResolvedAllSemesterResults = ReadonlyArray<
+export type ResolvedAllSemesterResultsSummary = ReadonlyArray<
 	Readonly<{
 		/** Cummulative credit hours for the semester and previous ones. */
 		cummCreditHours: number;
@@ -41,9 +41,9 @@ export type ResolvedAllSemesterResults = ReadonlyArray<
 	}>
 >;
 
-export const FetchedAllSemesterResultsSchema: v.GenericSchema<
+export const FetchedAllSemesterResultsSummarySchema: v.GenericSchema<
 	unknown,
-	ResolvedAllSemesterResults
+	ResolvedAllSemesterResultsSummary
 > = v.pipe(
 	NormalizeJsonArrayResponseSchema,
 
@@ -67,7 +67,7 @@ export const FetchedAllSemesterResultsSchema: v.GenericSchema<
 	v.transform((arr) =>
 		arr.map(
 			({ cl, credit, cummcredit, cummgpa, gpa, studylevel, quarterid }) => {
-				const transformed: ResolvedAllSemesterResults[number] = {
+				const transformed: ResolvedAllSemesterResultsSummary[number] = {
 					creditHours: credit,
 					cummCreditHours: cummcredit,
 					cummGpa: cummgpa,

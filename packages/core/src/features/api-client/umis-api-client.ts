@@ -6,7 +6,7 @@ import { attemptStudentLogin, isStudentValid } from "..";
 import type { VerifiedStudentResponseOutput } from "../check-user/schema";
 import type { ScrapedPersonalDetailsOutput } from "../personal-details/schema";
 import type { ResolvedSchoolInfo } from "../school-info/schema";
-import type { ResolvedAllSemesterResults } from "../semester-result/schema";
+import type { ResolvedAllSemesterResultsSummary } from "../semester-result/schema";
 
 /** A client for a single student */
 export default abstract class UmisApiStudentClient {
@@ -64,7 +64,7 @@ export default abstract class UmisApiStudentClient {
 	abstract getSchoolInfo(): Promise<Result<ResolvedSchoolInfo[], string>>;
 
 	/** Returns a summary of all the semester results for the student */
-	abstract getAllSemesterResults(): Promise<
-		Result<ResolvedAllSemesterResults, string>
+	abstract getAllSemesterResultsSummary(): Promise<
+		Result<ResolvedAllSemesterResultsSummary, string>
 	>;
 }

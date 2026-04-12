@@ -1,1 +1,1 @@
-export * from "./get-all-semester-results";
+export * from "./get-all-semester-results-summary";

@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "bun:test";
 import { UmisPage, UmisStudentsPagePrefix } from "../../constants/umis-pages";
-import { getAllSemesterResults } from "./get-all-semester-results";
+import { getAllSemesterResultsSummary } from "./get-all-semester-results-summary";
 
 const createHtmlResponse = () =>
 	new Response("<html></html>", {
@@ -14,7 +14,7 @@ const createJsonResponse = (body: unknown) =>
 		status: 200,
 	});
 
-describe(getAllSemesterResults.name, () => {
+describe(getAllSemesterResultsSummary.name, () => {
 	beforeEach(() => {
 		vi.restoreAllMocks();
 	});
@@ -40,7 +40,7 @@ describe(getAllSemesterResults.name, () => {
 			throw new Error(`Unexpected request ${input}`);
 		});
 
-		const result = await getAllSemesterResults({
+		const result = await getAllSemesterResultsSummary({
 			cookie,
 			mocks: { fetch: fetchSpy as unknown as typeof globalThis.fetch },
 		});
@@ -72,7 +72,7 @@ describe(getAllSemesterResults.name, () => {
 			throw new Error(`Unexpected request ${input}`);
 		});
 
-		const result = await getAllSemesterResults({
+		const result = await getAllSemesterResultsSummary({
 			cookie,
 			mocks: { fetch: fetchSpy as unknown as typeof globalThis.fetch },
 		});
@@ -94,7 +94,7 @@ describe(getAllSemesterResults.name, () => {
 			throw new Error(`Unexpected request ${input}`);
 		});
 
-		const result = await getAllSemesterResults({
+		const result = await getAllSemesterResultsSummary({
 			cookie,
 			mocks: { fetch: fetchSpy as unknown as typeof globalThis.fetch },
 		});

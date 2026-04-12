@@ -3,7 +3,7 @@ import * as features from "../index";
 import HTMLRewriterHTMLParser from "../parsers/html-rewriter";
 import type { ScrapedPersonalDetailsOutput } from "../personal-details/schema";
 import type { ResolvedSchoolInfo } from "../school-info/schema";
-import type { ResolvedAllSemesterResults } from "../semester-result/schema";
+import type { ResolvedAllSemesterResultsSummary } from "../semester-result/schema";
 import UmisApiStudentClient from "./umis-api-client";
 
 export class HtmlRewriterUmisApiStudentClient extends UmisApiStudentClient {
@@ -24,10 +24,10 @@ export class HtmlRewriterUmisApiStudentClient extends UmisApiStudentClient {
 			parserConstructor: HTMLRewriterHTMLParser,
 		});
 	}
-	override async getAllSemesterResults(): Promise<
-		Result<ResolvedAllSemesterResults, string>
+	override async getAllSemesterResultsSummary(): Promise<
+		Result<ResolvedAllSemesterResultsSummary, string>
 	> {
-		return features.getAllSemesterResults({
+		return features.getAllSemesterResultsSummary({
 			cookie: await this._getCookie(),
 			parserConstructor: HTMLRewriterHTMLParser,
 		});

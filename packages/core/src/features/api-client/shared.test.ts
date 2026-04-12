@@ -35,7 +35,8 @@ export const _sharedEntrypointTests = (
 	});
 
 	it("should fetch all semseter results", async () => {
-		const personalDetailsResult = await getClient().getAllSemesterResults();
+		const personalDetailsResult =
+			await getClient().getAllSemesterResultsSummary();
 		expect(personalDetailsResult.success).toBeTrue();
 
 		if (!personalDetailsResult.success) {

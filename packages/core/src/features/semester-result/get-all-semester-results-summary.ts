@@ -3,12 +3,12 @@ import { UmisPage } from "../../constants/umis-pages";
 import { fetchUmisJsonForPage } from "../../utils/umis-json";
 import type { UmisDataGetterFunction } from "../shared/_shared";
 import {
-	FetchedAllSemesterResultsSchema,
-	type ResolvedAllSemesterResults,
+	FetchedAllSemesterResultsSummarySchema,
+	type ResolvedAllSemesterResultsSummary,
 } from "./schema";
 
-export const getAllSemesterResults: UmisDataGetterFunction<
-	ResolvedAllSemesterResults
+export const getAllSemesterResultsSummary: UmisDataGetterFunction<
+	ResolvedAllSemesterResultsSummary
 > = async ({ cookie, mocks }) => {
 	const fetcher = mocks?.fetch ?? fetch;
 
@@ -28,7 +28,7 @@ export const getAllSemesterResults: UmisDataGetterFunction<
 
 	const parsedJsonResult = await fetchUmisJsonForPage(
 		cookie,
-		FetchedAllSemesterResultsSchema,
+		FetchedAllSemesterResultsSummarySchema,
 		{ fetch: fetcher },
 	);
 
