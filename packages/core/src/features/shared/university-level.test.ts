@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import * as v from "valibot";
-import { UniversityLevelSchema } from "./university-level";
+import { UniversityLevelSchema } from "../shared/university-level";
 
 describe("UniversityLevelSchema", () => {
 	it("should accept allowed level values", () => {

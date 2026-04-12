@@ -3,10 +3,11 @@ import { MatricNumberSchema } from "../../models/schemas/credentials";
 import { normalizeStringToCapitalCase } from "../../utils/string";
 import { ParseBooleanSchema, ParseIntegerSchema } from "../shared/coercion";
 import { EmailSchema } from "../shared/email";
+import { NormalizeJsonArrayResponseSchema } from "../shared/json-response-normalizer";
 import {
 	type UniversityLevelOutput,
 	UniversityLevelSchema,
-} from "./university-level";
+} from "../shared/university-level";
 
 export interface ResolvedPersonalDetails {
 	readonly accountNo: string;
@@ -131,15 +132,17 @@ export type ScrapedPersonalDetailsOutput = v.InferOutput<
 >;
 
 export const FetchedPersonalDetailsSchema: v.GenericSchema<
-	unknown[],
+	unknown,
 	ResolvedPersonalDetails
 > = v.pipe(
+	NormalizeJsonArrayResponseSchema,
+
 	v.tuple([
 		v.object({
 			accountnumber: v.string(),
 			address: v.string(),
 			addresscountry: v.string(),
-			CL: v.string(),
+			cl: v.string(),
 			current_study_level: UniversityLevelSchema,
 			denominationname: v.string(),
 			// TODO: See if I can make this a more specific union type
@@ -149,7 +152,7 @@ export const FetchedPersonalDetailsSchema: v.GenericSchema<
 			entry_level: UniversityLevelSchema,
 			etranzact_card_no: ParseIntegerSchema,
 			/** Looks like a Matric number but I don;t have enough test cases to conclude it */
-			KF: v.string(),
+			kf: v.string(),
 			majorname: v.string(),
 			maritalstatus: v.string(),
 			nationalitycountry: v.string(),

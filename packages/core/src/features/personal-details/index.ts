@@ -1,7 +1,6 @@
 import * as v from "valibot";
 import { getFetchHeaders } from "../../constants/fetch";
 import { UmisPage } from "../../constants/umis-pages";
-import type { Result } from "../../models/types/result";
 import { getErrorMessage } from "../../utils/error";
 import { fetchUmisJsonForPage } from "../../utils/umis-json";
 import type { UmisDataGetterFunction } from "../shared/_shared";
@@ -9,7 +8,6 @@ import {
 	FetchedPersonalDetailsSchema,
 	type ResolvedPersonalDetails,
 	type ScrapedPersonalDetailsInput,
-	type ScrapedPersonalDetailsOutput,
 	ScrapedPersonalDetailsSchema,
 } from "./schema";
 

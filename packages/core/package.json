@@ -13,24 +13,14 @@
 		"typescript": "^6.0.2"
 	},
 	"exports": {
-		"./html-rewriter": {
+		".": {
 			"import": {
-				"default": "./dist/html-rewriter.js",
-				"types": "./dist/html-rewriter.d.ts"
+				"default": "./dist/index.js",
+				"types": "./dist/index.d.ts"
 			},
 			"require": {
-				"default": "./dist/html-rewriter.cjs",
-				"types": "./dist/html-rewriter.d.cts"
-			}
-		},
-		"./node": {
-			"import": {
-				"default": "./dist/node.js",
-				"types": "./dist/node.d.ts"
-			},
-			"require": {
-				"default": "./dist/node.cjs",
-				"types": "./dist/node.d.cts"
+				"default": "./dist/index.cjs",
+				"types": "./dist/index.d.cts"
 			}
 		},
 		"./package.json": "./package.json"
@@ -42,6 +32,8 @@
 		"dist/min"
 	],
 	"license": "MIT",
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.js",
 	"name": "@packages/core",
 	"peerDependencies": {
 		"typescript": ">=4.5.0"
@@ -59,5 +51,6 @@
 		"test": "bun test --concurrent --timeout=10000 --coverage"
 	},
 	"type": "module",
+	"types": "./dist/index.d.ts",
 	"version": "0.1.0"
 }

@@ -6,7 +6,9 @@ import { attemptStudentLogin, isStudentValid } from "..";
 import type { VerifiedStudentResponseOutput } from "../check-user/schema";
 import type { ScrapedPersonalDetailsOutput } from "../personal-details/schema";
 import type { ResolvedSchoolInfo } from "../school-info/schema";
+import type { ResolvedAllSemesterResults } from "../semester-result/schema";
 
+/** A client for a single student */
 export default abstract class UmisApiStudentClient {
 	/** Cookie cache that must be refreshed every 15 minutes */
 	#cookie: string | null = null;
@@ -60,4 +62,9 @@ export default abstract class UmisApiStudentClient {
 
 	/** Returns a list of the available schools and links to their umis pages */
 	abstract getSchoolInfo(): Promise<Result<ResolvedSchoolInfo[], string>>;
+
+	/** Returns a summary of all the semester results for the student */
+	abstract getAllSemesterResults(): Promise<
+		Result<ResolvedAllSemesterResults, string>
+	>;
 }

@@ -1,1 +1,1 @@
-- [ ] Add attribute extraction to the html parsers.
+- [ ] Possibly add attribute extraction to the html parsers, if it's not desirable, remove the node / htmlrewrite split
