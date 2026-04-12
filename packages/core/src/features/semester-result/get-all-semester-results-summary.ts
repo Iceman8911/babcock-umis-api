@@ -1,13 +1,13 @@
 import { getFetchHeaders } from "../../constants/fetch";
 import { UmisPage } from "../../constants/umis-pages";
 import { fetchUmisJsonForPage } from "../../utils/umis-json";
-import type { UmisDataGetterFunction } from "../shared/_shared";
+import type { StaticUmisGetter } from "../shared/_shared";
 import {
 	FetchedAllSemesterResultsSummarySchema,
 	type ResolvedAllSemesterResultsSummary,
 } from "./schema";
 
-export const getAllSemesterResultsSummary: UmisDataGetterFunction<
+export const getAllSemesterResultsSummary: StaticUmisGetter<
 	ResolvedAllSemesterResultsSummary
 > = async ({ cookie, mocks }) => {
 	const fetcher = mocks?.fetch ?? fetch;

@@ -3,7 +3,7 @@ import { getFetchHeaders } from "../../constants/fetch";
 import { UmisPage } from "../../constants/umis-pages";
 import { getErrorMessage } from "../../utils/error";
 import { fetchUmisJsonForPage } from "../../utils/umis-json";
-import type { UmisDataGetterFunction } from "../shared/_shared";
+import type { StaticUmisGetter } from "../shared/_shared";
 import {
 	FetchedPersonalDetailsSchema,
 	type ResolvedPersonalDetails,
@@ -11,7 +11,7 @@ import {
 	ScrapedPersonalDetailsSchema,
 } from "./schema";
 
-export const getPersonalDetails: UmisDataGetterFunction<
+export const getPersonalDetails: StaticUmisGetter<
 	ResolvedPersonalDetails
 > = async ({ parserConstructor, cookie, mocks }) => {
 	try {

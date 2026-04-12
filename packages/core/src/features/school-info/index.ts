@@ -1,12 +1,13 @@
 import { getFetchHeaders } from "../../constants/fetch";
 import { UmisPage } from "../../constants/umis-pages";
 import { fetchUmisJsonForPage } from "../../utils/umis-json";
-import type { UmisDataGetterFunction } from "../shared/_shared";
+import type { StaticUmisGetter } from "../shared/_shared";
 import { FetchedSchoolInfoSchema, type ResolvedSchoolInfo } from "./schema";
 
-export const getSchoolDetails: UmisDataGetterFunction<
-	ResolvedSchoolInfo[]
-> = async ({ cookie, mocks }) => {
+export const getSchoolDetails: StaticUmisGetter<ResolvedSchoolInfo[]> = async ({
+	cookie,
+	mocks,
+}) => {
 	const fetcher = mocks?.fetch ?? globalThis.fetch;
 
 	const schoolInfoPageRes = await fetcher(UmisPage.SchoolInfo, {
