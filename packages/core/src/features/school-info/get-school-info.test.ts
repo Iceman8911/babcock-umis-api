@@ -1,5 +1,7 @@
 import { beforeEach, expect, it, vi } from "bun:test";
 import { UmisPage } from "../../constants/umis-pages";
+import { attemptStudentLogin } from "../login";
+import { CORRECT_LOGIN_PAYLOAD } from "../shared/_shared.test";
 import { getSchoolDetails } from "./index";
 
 beforeEach(() => {
@@ -41,10 +43,30 @@ it("should return parsed JSON school info when the JSON endpoint succeeds", asyn
 
 	expect(result.success).toBeTrue();
 	expect(result.val).toBeDefined();
-	const schoolInfo = result.val!;
+	const schoolInfo = result.val;
 	expect(schoolInfo[0]).toBeDefined();
-	const firstSchoolInfo = schoolInfo[0]!;
-	expect(firstSchoolInfo.shortName).toBe("SBS");
-	expect(firstSchoolInfo.fullName).toBe("School of Business");
+	const firstSchoolInfo = schoolInfo[0];
+	expect(firstSchoolInfo?.shortName).toBe("SBS");
+	expect(firstSchoolInfo?.fullName).toBe("School of Business");
 	expect(fetchSpy).toHaveBeenCalledTimes(2);
+});
+
+it("should fetch real school info with valid UMIS credentials", async () => {
+	const loginResponse = await attemptStudentLogin(CORRECT_LOGIN_PAYLOAD);
+	expect(loginResponse.success).toBeTrue();
+
+	if (!loginResponse.success)
+		throw new Error(`Login failed with error: ${loginResponse.err}`);
+
+	const result = await getSchoolDetails({
+		cookie: loginResponse.val.JSESSIONID,
+	});
+
+	expect(result.success).toBeTrue();
+
+	if (!result.success) throw new Error(result.err);
+
+	expect(result.val.length).toBeGreaterThan(0);
+	expect(result.val[0]?.shortName).toBeTruthy();
+	expect(result.val[0]?.fullName).toBeTruthy();
 });

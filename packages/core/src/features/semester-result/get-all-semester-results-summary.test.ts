@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "bun:test";
 import { UmisPage, UmisStudentsPagePrefix } from "../../constants/umis-pages";
+import { attemptStudentLogin } from "../login";
+import { CORRECT_LOGIN_PAYLOAD } from "../shared/_shared.test";
 import { getAllSemesterResultsSummary } from "./get-all-semester-results-summary";
 
 const createHtmlResponse = () =>
@@ -59,6 +61,25 @@ describe(getAllSemesterResultsSummary.name, () => {
 			},
 		]);
 		expect(fetchSpy).toHaveBeenCalledTimes(2);
+	});
+
+	it("should fetch real semester results summary with valid UMIS credentials", async () => {
+		const loginResponse = await attemptStudentLogin(CORRECT_LOGIN_PAYLOAD);
+		expect(loginResponse.success).toBeTrue();
+
+		if (!loginResponse.success)
+			throw new Error(`Login failed with error: ${loginResponse.err}`);
+
+		const result = await getAllSemesterResultsSummary({
+			cookie: loginResponse.val.JSESSIONID,
+		});
+
+		expect(result.success).toBeTrue();
+		if (!result.success) throw new Error(result.err);
+
+		expect(result.val.length).toBeGreaterThan(0);
+		expect(result.val[0]?.session).toBeTruthy();
+		expect(result.val[0]?.link).toContain("?view=");
 	});
 
 	it("should return an error when the semester results page returns a non-ok response", async () => {
