@@ -1,2 +1,2 @@
-export * from "./get-all-semester-results-summary";
-export * from "./get-semester-result";
+export * from "./get-semester-result-summaries";
+export * from "./get-single-semester-results";
