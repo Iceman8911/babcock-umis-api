@@ -3,12 +3,12 @@ import { UmisPage } from "../../constants/umis-pages";
 import { fetchUmisJsonForPage } from "../../utils/umis-json";
 import type { StaticUmisGetter } from "../shared/_shared";
 import {
-	FetchedAllSemesterResultsSummarySchema,
-	type ResolvedAllSemesterResultsSummary,
+	FetchedSemesterResultSummariesSchema,
+	type ResolvedSemesterResultSummaries,
 } from "./schema";
 
-export const getAllSemesterResultsSummary: StaticUmisGetter<
-	ResolvedAllSemesterResultsSummary
+export const getSemesterResultSummaries: StaticUmisGetter<
+	ResolvedSemesterResultSummaries
 > = async ({ cookie, mocks }) => {
 	const fetcher = mocks?.fetch ?? fetch;
 
@@ -28,7 +28,7 @@ export const getAllSemesterResultsSummary: StaticUmisGetter<
 
 	const parsedJsonResult = await fetchUmisJsonForPage(
 		cookie,
-		FetchedAllSemesterResultsSummarySchema,
+		FetchedSemesterResultSummariesSchema,
 		{ fetch: fetcher },
 	);
 

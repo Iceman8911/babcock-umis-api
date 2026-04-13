@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "bun:test";
 import { UmisPage, UmisStudentsPagePrefix } from "../../constants/umis-pages";
 import { attemptStudentLogin } from "../login";
 import { CORRECT_LOGIN_PAYLOAD } from "../shared/_shared.test";
-import { getAllSemesterResultsSummary } from "./get-all-semester-results-summary";
+import { getSemesterResultSummaries } from "./get-all-semester-results-summary";
 
 const createHtmlResponse = () =>
 	new Response("<html></html>", {
@@ -16,7 +16,7 @@ const createJsonResponse = (body: unknown) =>
 		status: 200,
 	});
 
-describe(getAllSemesterResultsSummary.name, () => {
+describe(getSemesterResultSummaries.name, () => {
 	beforeEach(() => {
 		vi.restoreAllMocks();
 	});
@@ -42,7 +42,7 @@ describe(getAllSemesterResultsSummary.name, () => {
 			throw new Error(`Unexpected request ${input}`);
 		});
 
-		const result = await getAllSemesterResultsSummary({
+		const result = await getSemesterResultSummaries({
 			cookie,
 			mocks: { fetch: fetchSpy as unknown as typeof globalThis.fetch },
 		});
@@ -70,7 +70,7 @@ describe(getAllSemesterResultsSummary.name, () => {
 		if (!loginResponse.success)
 			throw new Error(`Login failed with error: ${loginResponse.err}`);
 
-		const result = await getAllSemesterResultsSummary({
+		const result = await getSemesterResultSummaries({
 			cookie: loginResponse.val.JSESSIONID,
 		});
 
@@ -93,7 +93,7 @@ describe(getAllSemesterResultsSummary.name, () => {
 			throw new Error(`Unexpected request ${input}`);
 		});
 
-		const result = await getAllSemesterResultsSummary({
+		const result = await getSemesterResultSummaries({
 			cookie,
 			mocks: { fetch: fetchSpy as unknown as typeof globalThis.fetch },
 		});
@@ -115,7 +115,7 @@ describe(getAllSemesterResultsSummary.name, () => {
 			throw new Error(`Unexpected request ${input}`);
 		});
 
-		const result = await getAllSemesterResultsSummary({
+		const result = await getSemesterResultSummaries({
 			cookie,
 			mocks: { fetch: fetchSpy as unknown as typeof globalThis.fetch },
 		});

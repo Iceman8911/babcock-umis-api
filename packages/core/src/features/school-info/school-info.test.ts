@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import * as v from "valibot";
 import { UmisStudentsPagePrefix } from "../../constants/umis-pages";
-import { FetchedSchoolInfoSchema } from "./schema";
+import { FetchedSchoolDetailsSchema } from "./schema";
 
 describe("FetchedSchoolInfoSchema", () => {
 	it("should parse and transform fetched school info correctly", () => {
@@ -14,7 +14,7 @@ describe("FetchedSchoolInfoSchema", () => {
 			},
 		];
 
-		const parsed = v.parse(FetchedSchoolInfoSchema, fetched);
+		const parsed = v.parse(FetchedSchoolDetailsSchema, fetched);
 
 		expect(parsed).toBeInstanceOf(Array);
 		expect(parsed[0]).toBeDefined();
@@ -29,6 +29,6 @@ describe("FetchedSchoolInfoSchema", () => {
 	it("should reject invalid shapes", () => {
 		const bad = [{ missing: "fields" }];
 
-		expect(v.safeParse(FetchedSchoolInfoSchema, bad).success).toBe(false);
+		expect(v.safeParse(FetchedSchoolDetailsSchema, bad).success).toBe(false);
 	});
 });

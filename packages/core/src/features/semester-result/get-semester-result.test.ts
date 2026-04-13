@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "bun:test";
 import { attemptStudentLogin } from "../login";
 import { CORRECT_LOGIN_PAYLOAD } from "../shared/_shared.test";
-import { getAllSemesterResultsSummary } from "./get-all-semester-results-summary";
-import { getSemesterResult } from "./get-semester-result";
+import { getSemesterResultSummaries } from "./get-all-semester-results-summary";
+import { getSingleSemesterResults } from "./get-semester-result";
 
-describe(getSemesterResult.name, () => {
+describe(getSingleSemesterResults.name, () => {
 	beforeEach(() => {
 		vi.restoreAllMocks();
 	});
@@ -18,7 +18,7 @@ describe(getSemesterResult.name, () => {
 		}
 
 		const cookie = loginResult.val.JSESSIONID;
-		const summaryResult = await getAllSemesterResultsSummary({ cookie });
+		const summaryResult = await getSemesterResultSummaries({ cookie });
 		expect(summaryResult.success).toBeTrue();
 
 		if (!summaryResult.success) {
@@ -30,7 +30,7 @@ describe(getSemesterResult.name, () => {
 
 		if (!firstSemester) throw "";
 
-		const result = await getSemesterResult({
+		const result = await getSingleSemesterResults({
 			cookie,
 			link: firstSemester.link,
 		});
@@ -56,7 +56,7 @@ describe(getSemesterResult.name, () => {
 			});
 		};
 
-		const result = await getSemesterResult({
+		const result = await getSingleSemesterResults({
 			cookie: "invalid-cookie",
 			link: "https://example.com/fail",
 			mocks: { fetch: fetchSpy as unknown as typeof globalThis.fetch },

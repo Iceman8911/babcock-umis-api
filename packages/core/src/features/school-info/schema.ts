@@ -2,18 +2,20 @@ import * as v from "valibot";
 import { UmisStudentsPagePrefix } from "../../constants/umis-pages";
 import { NormalizeJsonArrayResponseSchema } from "../shared/json-response-normalizer";
 
-export interface ResolvedSchoolInfo {
-	/** E.g Babcock Business School */
-	fullName: string;
-	link: string;
+export type ResolvedSchoolDetails = ReadonlyArray<
+	Readonly<{
+		/** E.g Babcock Business School */
+		fullName: string;
+		link: string;
 
-	/** E.g BBS. Basically the short form of the school name */
-	shortName: string;
-}
+		/** E.g BBS. Basically the short form of the school name */
+		shortName: string;
+	}>
+>;
 
-export const FetchedSchoolInfoSchema: v.GenericSchema<
+export const FetchedSchoolDetailsSchema: v.GenericSchema<
 	unknown,
-	ResolvedSchoolInfo[]
+	ResolvedSchoolDetails
 > = v.pipe(
 	NormalizeJsonArrayResponseSchema,
 

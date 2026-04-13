@@ -11,7 +11,7 @@ export const _sharedEntrypointTests = (
 	});
 
 	it("should fetch personal details", async () => {
-		const personalDetailsResult = await getClient().getPersonalInfo();
+		const personalDetailsResult = await getClient().getPersonalDetails();
 		expect(personalDetailsResult.success).toBeTrue();
 
 		if (!personalDetailsResult.success) {
@@ -24,7 +24,7 @@ export const _sharedEntrypointTests = (
 	});
 
 	it("should fetch the school info", async () => {
-		const schoolInfoRes = await getClient().getSchoolInfo();
+		const schoolInfoRes = await getClient().getSchoolDetails();
 		expect(schoolInfoRes.success).toBeTrue();
 
 		if (!schoolInfoRes.success) {
@@ -34,9 +34,9 @@ export const _sharedEntrypointTests = (
 		expect(schoolInfoRes.val.length).toBeGreaterThan(0);
 	});
 
-	it("should fetch all semseter result summaries", async () => {
+	it("should fetch all semester result summaries", async () => {
 		const allSemesterResultsSummary =
-			await getClient().getAllSemesterResultsSummary();
+			await getClient().getSemesterResultSummaries();
 		expect(allSemesterResultsSummary.success).toBeTrue();
 
 		if (!allSemesterResultsSummary.success) {
@@ -48,7 +48,7 @@ export const _sharedEntrypointTests = (
 
 	it("should fetch a semester result by session", async () => {
 		const client = getClient();
-		const allSemesterResults = await client.getAllSemesterResultsSummary();
+		const allSemesterResults = await client.getSemesterResultSummaries();
 		expect(allSemesterResults.success).toBeTrue();
 
 		if (!allSemesterResults.success) {
@@ -60,7 +60,7 @@ export const _sharedEntrypointTests = (
 
 		if (!firstSemester) throw "";
 
-		const semesterResult = await client.getSemesterResult({
+		const semesterResult = await client.getSingleSemesterResults({
 			session: firstSemester.session,
 			type: "session",
 		});
@@ -76,7 +76,7 @@ export const _sharedEntrypointTests = (
 
 	it("should fetch a semester result by link", async () => {
 		const client = getClient();
-		const allSemesterResults = await client.getAllSemesterResultsSummary();
+		const allSemesterResults = await client.getSemesterResultSummaries();
 		expect(allSemesterResults.success).toBeTrue();
 
 		if (!allSemesterResults.success) {
@@ -88,7 +88,7 @@ export const _sharedEntrypointTests = (
 
 		if (!firstSemester) throw "";
 
-		const semesterResult = await client.getSemesterResult({
+		const semesterResult = await client.getSingleSemesterResults({
 			link: firstSemester.link,
 			type: "link",
 		});

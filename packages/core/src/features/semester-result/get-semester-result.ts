@@ -2,12 +2,12 @@ import { getFetchHeaders } from "../../constants/fetch";
 import { fetchUmisJsonForPage } from "../../utils/umis-json";
 import type { DynamicUmisGetter } from "../shared/_shared";
 import {
-	FetchedSemesterResultSchema,
-	type ResolvedSemesterResult,
+	FetchedSingleSemesterResultsSchema,
+	type ResolvedSingleSemesterResults,
 } from "./schema";
 
-export const getSemesterResult: DynamicUmisGetter<
-	ResolvedSemesterResult
+export const getSingleSemesterResults: DynamicUmisGetter<
+	ResolvedSingleSemesterResults
 > = async ({ cookie, link, mocks }) => {
 	const fetcher = mocks?.fetch ?? fetch;
 
@@ -27,7 +27,7 @@ export const getSemesterResult: DynamicUmisGetter<
 
 	const parsedJsonResult = await fetchUmisJsonForPage(
 		cookie,
-		FetchedSemesterResultSchema,
+		FetchedSingleSemesterResultsSchema,
 		{ fetch: fetcher },
 	);
 

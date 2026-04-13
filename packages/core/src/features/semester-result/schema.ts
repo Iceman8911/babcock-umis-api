@@ -12,7 +12,7 @@ import {
 /** Matches <a href='?view=19:0:0&data=431025'>2022/2023.1</a>, and captures `2022/2023.1` */
 const SESSION_REGEX = /<a.*>(\d+\/\d+\.?\d?)/;
 
-export type ResolvedAllSemesterResultsSummary = ReadonlyArray<
+export type ResolvedSemesterResultSummaries = ReadonlyArray<
 	Readonly<{
 		/** Cummulative credit hours for the semester and previous ones. */
 		cummCreditHours: number;
@@ -37,9 +37,9 @@ export type ResolvedAllSemesterResultsSummary = ReadonlyArray<
 	}>
 >;
 
-export const FetchedAllSemesterResultsSummarySchema: v.GenericSchema<
+export const FetchedSemesterResultSummariesSchema: v.GenericSchema<
 	unknown,
-	ResolvedAllSemesterResultsSummary
+	ResolvedSemesterResultSummaries
 > = v.pipe(
 	NormalizeJsonArrayResponseSchema,
 
@@ -62,7 +62,7 @@ export const FetchedAllSemesterResultsSummarySchema: v.GenericSchema<
 
 			v.transform(
 				({ cl, credit, cummcredit, cummgpa, gpa, studylevel, quarterid }) => {
-					const transformed: ResolvedAllSemesterResultsSummary[number] = {
+					const transformed: ResolvedSemesterResultSummaries[number] = {
 						creditHours: credit,
 						cummCreditHours: cummcredit,
 						cummGpa: cummgpa,
@@ -82,7 +82,7 @@ export const FetchedAllSemesterResultsSummarySchema: v.GenericSchema<
 
 const IntegerAtMost100Schema = v.pipe(v.number(), v.integer(), v.maxValue(100));
 
-export type ResolvedSemesterResult = ReadonlyArray<
+export type ResolvedSingleSemesterResults = ReadonlyArray<
 	Readonly<{
 		grade: GradeOutput;
 
@@ -105,9 +105,9 @@ export type ResolvedSemesterResult = ReadonlyArray<
 	}>
 >;
 
-export const FetchedSemesterResultSchema: v.GenericSchema<
+export const FetchedSingleSemesterResultsSchema: v.GenericSchema<
 	unknown,
-	ResolvedSemesterResult
+	ResolvedSingleSemesterResults
 > = v.pipe(
 	NormalizeJsonArrayResponseSchema,
 
@@ -124,7 +124,7 @@ export const FetchedSemesterResultSchema: v.GenericSchema<
 
 			v.transform(
 				({ courseid, coursetitle, credit, finalmarks, gpa, gradeid }) => {
-					const transformed: ResolvedSemesterResult[number] = {
+					const transformed: ResolvedSingleSemesterResults[number] = {
 						course: {
 							code: courseid,
 							title: coursetitle,
