@@ -6,7 +6,11 @@ import { attemptStudentLogin, isStudentValid } from "..";
 import type { VerifiedStudentResponseOutput } from "../check-user/schema";
 import type { ScrapedPersonalDetailsOutput } from "../personal-details/schema";
 import type { ResolvedSchoolInfo } from "../school-info/schema";
-import type { ResolvedAllSemesterResultsSummary } from "../semester-result/schema";
+import type {
+	ResolvedAllSemesterResultsSummary,
+	ResolvedSemesterResult,
+} from "../semester-result/schema";
+import type { ApiClientGetSemesterResultArg } from "./shared";
 
 /** A client for a single student */
 export default abstract class UmisApiStudentClient {
@@ -67,4 +71,9 @@ export default abstract class UmisApiStudentClient {
 	abstract getAllSemesterResultsSummary(): Promise<
 		Result<ResolvedAllSemesterResultsSummary, string>
 	>;
+
+	/** Returns the grades of all the courses within a single semester */
+	abstract getSemesterResult(
+		arg: ApiClientGetSemesterResultArg,
+	): Promise<Result<ResolvedSemesterResult, string>>;
 }
