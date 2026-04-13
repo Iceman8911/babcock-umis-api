@@ -48,38 +48,38 @@ export const FetchedAllSemesterResultsSummarySchema: v.GenericSchema<
 	NormalizeJsonArrayResponseSchema,
 
 	v.array(
-		v.object({
-			/** A query string to be concatenated to the base url to link to the page containing the course scores. */
-			cl: v.string(),
-			credit: ParseIntegerSchema,
-			cummcredit: ParseIntegerSchema,
+		v.pipe(
+			v.object({
+				/** A query string to be concatenated to the base url to link to the page containing the course scores. */
+				cl: v.string(),
+				credit: ParseIntegerSchema,
+				cummcredit: ParseIntegerSchema,
 
-			cummgpa: ParseFloatSchema,
-			gpa: ParseFloatSchema,
-			/** Random Id */
-			kf: ParseIntegerSchema,
-			/** Serialized DOM link. Also contains the session (2023/2024). */
-			quarterid: v.pipe(v.string(), v.regex(SESSION_REGEX)),
-			studylevel: UniversityLevelSchema,
-		}),
-	),
+				cummgpa: ParseFloatSchema,
+				gpa: ParseFloatSchema,
+				/** Random Id */
+				kf: ParseIntegerSchema,
+				/** Serialized DOM link. Also contains the session (2023/2024). */
+				quarterid: v.pipe(v.string(), v.regex(SESSION_REGEX)),
+				studylevel: UniversityLevelSchema,
+			}),
 
-	v.transform((arr) =>
-		arr.map(
-			({ cl, credit, cummcredit, cummgpa, gpa, studylevel, quarterid }) => {
-				const transformed: ResolvedAllSemesterResultsSummary[number] = {
-					creditHours: credit,
-					cummCreditHours: cummcredit,
-					cummGpa: cummgpa,
-					gpa,
-					link: `${UmisStudentsPagePrefix}${cl}`,
-					// Casting is safe here since `quaterid` is valdiated beforehand
-					session: quarterid.match(SESSION_REGEX)?.[1] as Session,
-					studyLevel: studylevel,
-				};
+			v.transform(
+				({ cl, credit, cummcredit, cummgpa, gpa, studylevel, quarterid }) => {
+					const transformed: ResolvedAllSemesterResultsSummary[number] = {
+						creditHours: credit,
+						cummCreditHours: cummcredit,
+						cummGpa: cummgpa,
+						gpa,
+						link: `${UmisStudentsPagePrefix}${cl}`,
+						// Casting is safe here since `quaterid` is valdiated beforehand
+						session: quarterid.match(SESSION_REGEX)?.[1] as Session,
+						studyLevel: studylevel,
+					};
 
-				return transformed;
-			},
+					return transformed;
+				},
+			),
 		),
 	),
 );
