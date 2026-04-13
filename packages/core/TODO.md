@@ -1,1 +1,3 @@
-- [ ] Possibly add attribute extraction to the html parsers, if it's not desirable, remove the node / htmlrewrite split
+- [ ] Possibly add attribute extraction to the html parsers, if it's not desirable, remove the node / htmlrewrite split.
+- [ ] Make schemas more forgiving and give fallbacks where possible.
+- [ ] Ensure all tests driectly query umis and keep mocking to a minimum, if possible, remove all mocks and use the real data for testing.
