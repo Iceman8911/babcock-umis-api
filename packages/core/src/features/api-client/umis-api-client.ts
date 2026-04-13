@@ -2,6 +2,8 @@
 
 import type { StudentCredentialsInput } from "../../models/schemas/credentials";
 import type { Result } from "../../models/types/result";
+import { checkListings } from "../check-listing";
+import type { ResolvedCheckListings } from "../check-listing/schema";
 import { isStudentValid } from "../check-user";
 import type { VerifiedStudentResponseOutput } from "../check-user/schema";
 import { attemptStudentLogin } from "../login";
@@ -102,6 +104,11 @@ export default abstract class UmisApiStudentClient {
 		Result<ResolvedSemesterResultSummaries, string>
 	> {
 		return getSemesterResultSummaries(await this.#getStaticUmisGetterProps());
+	}
+
+	/** Returns the listings for the student. */
+	async checkListings(): Promise<Result<ResolvedCheckListings, string>> {
+		return checkListings(await this.#getStaticUmisGetterProps());
 	}
 
 	/** Returns the grades of all the courses within a single semester */

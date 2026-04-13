@@ -112,4 +112,14 @@ export const _sharedEntrypointTests = (
 
 		expect(allSemesterResults.val.length).toBeGreaterThan(0);
 	});
+
+	it("should fetch all listings", async () => {
+		const allListingsRes = await getClient().checkListings();
+
+		expect(allListingsRes.success).toBeTrue();
+
+		if (!allListingsRes.success) throw Error(allListingsRes.err);
+
+		expect(allListingsRes.val.length).toBeGreaterThan(0);
+	});
 };
