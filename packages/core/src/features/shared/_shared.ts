@@ -18,3 +18,9 @@ export type StaticUmisGetter<TResultType> = (
 export type DynamicUmisGetter<TResultType> = (
 	arg: GetterArgs & { link: string },
 ) => Promise<Result<TResultType, string>>;
+
+type PositiveIntegersLessThan10 = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+type Year = `20${PositiveIntegersLessThan10}${PositiveIntegersLessThan10}`;
+type YearWithSessionDenominator = `${Year}.${1 | 2 | 3}`;
+
+export type Session = `${Year}/${YearWithSessionDenominator}`;

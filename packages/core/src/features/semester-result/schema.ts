@@ -1,17 +1,13 @@
 import * as v from "valibot";
 import { UmisStudentsPagePrefix } from "../../constants/umis-pages";
+import type { Session } from "../shared/_shared";
 import { ParseFloatSchema, ParseIntegerSchema } from "../shared/coercion";
+import { type GradeOutput, GradeSchema } from "../shared/grade";
 import { NormalizeJsonArrayResponseSchema } from "../shared/json-response-normalizer";
 import {
 	type UniversityLevelOutput,
 	UniversityLevelSchema,
 } from "../shared/university-level";
-
-type PositiveIntegersLessThan10 = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
-type Year = `20${PositiveIntegersLessThan10}${PositiveIntegersLessThan10}`;
-type YearWithSessionDenominator = `${Year}.${1 | 2 | 3}`;
-
-type Session = `${Year}/${YearWithSessionDenominator}`;
 
 /** Matches <a href='?view=19:0:0&data=431025'>2022/2023.1</a>, and captures `2022/2023.1` */
 const SESSION_REGEX = /<a.*>(\d+\/\d+\.?\d?)/;
@@ -75,6 +71,68 @@ export const FetchedAllSemesterResultsSummarySchema: v.GenericSchema<
 						// Casting is safe here since `quaterid` is valdiated beforehand
 						session: quarterid.match(SESSION_REGEX)?.[1] as Session,
 						studyLevel: studylevel,
+					};
+
+					return transformed;
+				},
+			),
+		),
+	),
+);
+
+const IntegerAtMost100Schema = v.pipe(v.number(), v.integer(), v.maxValue(100));
+
+export type ResolvedSemesterResult = ReadonlyArray<
+	Readonly<{
+		grade: GradeOutput;
+
+		/** Amount of gpa to add. It's always equal to `grade` * `credit`. */
+		gpa: number;
+
+		/** Score between 0 and 100 */
+		score: number;
+
+		/** Fixed amount of credits for the course e.g. 0, 1, 2, 3, 6, etc */
+		credit: number;
+
+		course: {
+			/** Course code e.g. `GEDS101` */
+			code: string;
+
+			/** Full course name e.g. `Philosophy of Christian Education` */
+			title: string;
+		};
+	}>
+>;
+
+export const FetchedSemesterResultSchema: v.GenericSchema<
+	unknown,
+	ResolvedSemesterResult
+> = v.pipe(
+	NormalizeJsonArrayResponseSchema,
+
+	v.array(
+		v.pipe(
+			v.object({
+				courseid: v.string(),
+				coursetitle: v.string(),
+				credit: ParseIntegerSchema,
+				finalmarks: v.pipe(ParseIntegerSchema, IntegerAtMost100Schema),
+				gpa: ParseIntegerSchema,
+				gradeid: GradeSchema,
+			}),
+
+			v.transform(
+				({ courseid, coursetitle, credit, finalmarks, gpa, gradeid }) => {
+					const transformed: ResolvedSemesterResult[number] = {
+						course: {
+							code: courseid,
+							title: coursetitle,
+						},
+						credit,
+						gpa,
+						grade: gradeid,
+						score: finalmarks,
 					};
 
 					return transformed;
