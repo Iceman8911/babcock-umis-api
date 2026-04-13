@@ -24,27 +24,28 @@ export const _sharedEntrypointTests = (
 	});
 
 	it("should fetch the school info", async () => {
-		const personalDetailsResult = await getClient().getSchoolInfo();
-		expect(personalDetailsResult.success).toBeTrue();
+		const schoolInfoRes = await getClient().getSchoolInfo();
+		expect(schoolInfoRes.success).toBeTrue();
 
-		if (!personalDetailsResult.success) {
-			throw Error(personalDetailsResult.err);
+		if (!schoolInfoRes.success) {
+			throw Error(schoolInfoRes.err);
 		}
 
-		expect(personalDetailsResult.val.length).toBeGreaterThan(0);
+		expect(schoolInfoRes.val.length).toBeGreaterThan(0);
 	});
 
-	it("should fetch all semseter results", async () => {
-		const personalDetailsResult =
+	it("should fetch all semseter result summaries", async () => {
+		const allSemesterResultsSummary =
 			await getClient().getAllSemesterResultsSummary();
-		expect(personalDetailsResult.success).toBeTrue();
+		expect(allSemesterResultsSummary.success).toBeTrue();
 
-		if (!personalDetailsResult.success) {
-			throw Error(personalDetailsResult.err);
+		if (!allSemesterResultsSummary.success) {
+			throw Error(allSemesterResultsSummary.err);
 		}
 
-		expect(personalDetailsResult.val.length).toBeGreaterThan(0);
+		expect(allSemesterResultsSummary.val.length).toBeGreaterThan(0);
 	});
+
 	it("should fetch a semester result by session", async () => {
 		const client = getClient();
 		const allSemesterResults = await client.getAllSemesterResultsSummary();
@@ -99,5 +100,16 @@ export const _sharedEntrypointTests = (
 
 		expect(semesterResult.val.length).toBeGreaterThan(0);
 		expect(semesterResult.val[0]?.course.title).toBeTruthy();
+	});
+
+	it("should fetch all course grades from all semesters ", async () => {
+		const allSemesterResults = await getClient().getAllSemesterResults();
+		expect(allSemesterResults.success).toBeTrue();
+
+		if (!allSemesterResults.success) {
+			throw Error(allSemesterResults.err);
+		}
+
+		expect(allSemesterResults.val.length).toBeGreaterThan(0);
 	});
 };

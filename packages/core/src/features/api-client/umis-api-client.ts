@@ -76,4 +76,31 @@ export default abstract class UmisApiStudentClient {
 	abstract getSemesterResult(
 		arg: ApiClientGetSemesterResultArg,
 	): Promise<Result<ResolvedSemesterResult, string>>;
+
+	/** Returns the grades of all courses of all the semesters  */
+	async getAllSemesterResults(): Promise<
+		Result<ResolvedSemesterResult, string>
+	> {
+		const allSemesterResultsSummaryRes =
+			await this.getAllSemesterResultsSummary();
+
+		if (!allSemesterResultsSummaryRes.success)
+			return allSemesterResultsSummaryRes;
+
+		const results: Array<ResolvedSemesterResult[number]> = [];
+
+		/** This has to be done sequentially since a single cookie is shared between all the requests. */
+		for (const { link } of allSemesterResultsSummaryRes.val) {
+			const semesterResultRes = await this.getSemesterResult({
+				link,
+				type: "link",
+			});
+
+			if (!semesterResultRes.success) return semesterResultRes;
+
+			results.push(...semesterResultRes.val);
+		}
+
+		return { success: true, val: results };
+	}
 }
