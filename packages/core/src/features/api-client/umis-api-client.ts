@@ -2,14 +2,24 @@
 
 import type { StudentCredentialsInput } from "../../models/schemas/credentials";
 import type { Result } from "../../models/types/result";
-import { attemptStudentLogin, isStudentValid } from "..";
+import { isStudentValid } from "../check-user";
 import type { VerifiedStudentResponseOutput } from "../check-user/schema";
+import { attemptStudentLogin } from "../login";
+import type HTMLParser from "../parsers/html-parser";
+import { getPersonalDetails } from "../personal-details";
 import type { ResolvedPersonalDetails } from "../personal-details/schema";
+import { getSchoolDetails } from "../school-info";
 import type { ResolvedSchoolDetails } from "../school-info/schema";
+import { getSemesterResultSummaries } from "../semester-result/get-semester-result-summaries";
+import { getSingleSemesterResults } from "../semester-result/get-single-semester-results";
 import type {
 	ResolvedSemesterResultSummaries,
 	ResolvedSingleSemesterResults,
 } from "../semester-result/schema";
+import type {
+	DynamicUmisGetterProps,
+	StaticUmisGetterProps,
+} from "../shared/_shared";
 import type { ApiClientGetSemesterResultArg } from "./shared";
 
 /** A client for a single student */
@@ -22,6 +32,8 @@ export default abstract class UmisApiStudentClient {
 	readonly #cookieExpiryMs: number;
 
 	protected readonly _creds: StudentCredentialsInput;
+
+	protected abstract _parser: typeof HTMLParser;
 
 	constructor(
 		credentials: StudentCredentialsInput,
@@ -55,27 +67,73 @@ export default abstract class UmisApiStudentClient {
 		return this.#cookie;
 	}
 
+	async #getStaticUmisGetterProps(): Promise<StaticUmisGetterProps> {
+		return {
+			cookie: await this._getCookie(),
+			parserConstructor: this._parser,
+		};
+	}
+
+	async #getDynamicUmisGetterProps(
+		link: string,
+	): Promise<DynamicUmisGetterProps> {
+		return {
+			...(await this.#getStaticUmisGetterProps()),
+			link,
+		};
+	}
+
 	isStudentValid(): Promise<Result<VerifiedStudentResponseOutput, string>> {
 		return isStudentValid(this._creds.user);
 	}
 
 	/** Returns the public student bio */
-	abstract getPersonalDetails(): Promise<
-		Result<ResolvedPersonalDetails, string>
-	>;
+	async getPersonalDetails(): Promise<Result<ResolvedPersonalDetails, string>> {
+		return getPersonalDetails(await this.#getStaticUmisGetterProps());
+	}
 
 	/** Returns a list of the available schools and links to their umis pages */
-	abstract getSchoolDetails(): Promise<Result<ResolvedSchoolDetails, string>>;
+	async getSchoolDetails(): Promise<Result<ResolvedSchoolDetails, string>> {
+		return getSchoolDetails(await this.#getStaticUmisGetterProps());
+	}
 
 	/** Returns a summary of all the semester results for the student. */
-	abstract getSemesterResultSummaries(): Promise<
+	async getSemesterResultSummaries(): Promise<
 		Result<ResolvedSemesterResultSummaries, string>
-	>;
+	> {
+		return getSemesterResultSummaries(await this.#getStaticUmisGetterProps());
+	}
 
 	/** Returns the grades of all the courses within a single semester */
-	abstract getSingleSemesterResults(
+	async getSingleSemesterResults(
 		arg: ApiClientGetSemesterResultArg,
-	): Promise<Result<ResolvedSingleSemesterResults, string>>;
+	): Promise<Result<ResolvedSingleSemesterResults, string>> {
+		let link: string;
+
+		if (arg.type === "link") {
+			link = arg.link;
+		} else {
+			const allSemesterResults = await this.getSemesterResultSummaries();
+
+			if (!allSemesterResults.success) return allSemesterResults;
+
+			const found = allSemesterResults.val.find(
+				(res) => res.session === arg.session,
+			);
+
+			if (!found)
+				return {
+					err: `No semester result found for student ${this._creds.user} in session ${arg.session}`,
+					success: false,
+				};
+
+			link = found.link;
+		}
+
+		return getSingleSemesterResults(
+			await this.#getDynamicUmisGetterProps(link),
+		);
+	}
 
 	/** Returns the grades of all courses of all the semesters  */
 	async getAllSemesterResults(): Promise<
