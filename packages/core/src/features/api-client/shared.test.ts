@@ -45,4 +45,59 @@ export const _sharedEntrypointTests = (
 
 		expect(personalDetailsResult.val.length).toBeGreaterThan(0);
 	});
+	it("should fetch a semester result by session", async () => {
+		const client = getClient();
+		const allSemesterResults = await client.getAllSemesterResultsSummary();
+		expect(allSemesterResults.success).toBeTrue();
+
+		if (!allSemesterResults.success) {
+			throw new Error(allSemesterResults.err);
+		}
+
+		const [firstSemester] = allSemesterResults.val;
+		expect(firstSemester).toBeDefined();
+
+		if (!firstSemester) throw "";
+
+		const semesterResult = await client.getSemesterResult({
+			session: firstSemester.session,
+			type: "session",
+		});
+		expect(semesterResult.success).toBeTrue();
+
+		if (!semesterResult.success) {
+			throw new Error(semesterResult.err);
+		}
+
+		expect(semesterResult.val.length).toBeGreaterThan(0);
+		expect(semesterResult.val[0]?.course.code).toBeTruthy();
+	});
+
+	it("should fetch a semester result by link", async () => {
+		const client = getClient();
+		const allSemesterResults = await client.getAllSemesterResultsSummary();
+		expect(allSemesterResults.success).toBeTrue();
+
+		if (!allSemesterResults.success) {
+			throw new Error(allSemesterResults.err);
+		}
+
+		const [firstSemester] = allSemesterResults.val;
+		expect(firstSemester).toBeDefined();
+
+		if (!firstSemester) throw "";
+
+		const semesterResult = await client.getSemesterResult({
+			link: firstSemester.link,
+			type: "link",
+		});
+		expect(semesterResult.success).toBeTrue();
+
+		if (!semesterResult.success) {
+			throw new Error(semesterResult.err);
+		}
+
+		expect(semesterResult.val.length).toBeGreaterThan(0);
+		expect(semesterResult.val[0]?.course.title).toBeTruthy();
+	});
 };
