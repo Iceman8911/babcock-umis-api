@@ -113,6 +113,15 @@ export const _sharedEntrypointTests = (
 		expect(allSemesterResults.val.length).toBeGreaterThan(0);
 	});
 
+	it("should fetch the selected course list", async () => {
+		const selectedCourseListRes = await getClient().getSelectedCourseList();
+		expect(selectedCourseListRes.success).toBeTrue();
+
+		if (!selectedCourseListRes.success) throw Error(selectedCourseListRes.err);
+
+		expect(selectedCourseListRes.val.length).toBeGreaterThanOrEqual(0);
+	});
+
 	it("should fetch all listings", async () => {
 		const allListingsRes = await getClient().checkListings();
 

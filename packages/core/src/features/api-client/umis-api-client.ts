@@ -6,6 +6,8 @@ import { checkListings } from "../check-listing";
 import type { ResolvedCheckListings } from "../check-listing/schema";
 import { isStudentValid } from "../check-user";
 import type { VerifiedStudentResponseOutput } from "../check-user/schema";
+import { getSelectedCourseList } from "../get-courses/get-selected-course-list";
+import type { ResolvedSelectedCourseList } from "../get-courses/schema";
 import { attemptStudentLogin } from "../login";
 import type HTMLParser from "../parsers/html-parser";
 import { getPersonalDetails } from "../personal-details";
@@ -109,6 +111,12 @@ export default abstract class UmisApiStudentClient {
 	/** Returns the listings for the student. */
 	async checkListings(): Promise<Result<ResolvedCheckListings, string>> {
 		return checkListings(await this.#getStaticUmisGetterProps());
+	}
+
+	async getSelectedCourseList(): Promise<
+		Result<ResolvedSelectedCourseList, string>
+	> {
+		return getSelectedCourseList(await this.#getStaticUmisGetterProps());
 	}
 
 	/** Returns the grades of all the courses within a single semester */
