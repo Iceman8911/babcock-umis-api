@@ -9,3 +9,5 @@ export const ParseIntegerSchema = v.pipe(
 );
 
 export const ParseFloatSchema = v.pipe(v.unknown(), v.toNumber());
+
+export const ParseDateSchema = v.pipe(v.unknown(), v.toDate());

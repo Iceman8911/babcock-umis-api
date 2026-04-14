@@ -3,6 +3,7 @@ import * as v from "valibot";
 import {
 	ParseBooleanSchema,
 	ParseDateSchema,
+	ParseFloatSchema,
 	ParseIntegerSchema,
 } from "./coercion";
 
@@ -56,5 +57,24 @@ describe("ParseFloatSchema", () => {
 		expect(v.safeParse(ParseFloatSchema, "1d00.5").success).toBe(false);
 		expect(v.safeParse(ParseFloatSchema, "abc").success).toBe(false);
 		expect(v.safeParse(ParseFloatSchema, NaN).success).toBe(false);
+	});
+});
+
+describe("ParseDateSchema", () => {
+	it("should parse date-coercable values", () => {
+		expect(v.parse(ParseDateSchema, "2025-12-31 14:46:28.246756")).toBeDate();
+		expect(
+			v.parse(ParseDateSchema, "2025-12-31 14:46:28.246756").getTime(),
+		).not.toBeNaN();
+
+		// expect(v.parse(ParseDateSchema, "2025-12-31 14:46:28.246756")).toBeDate();
+		// expect(
+		// 	v.parse(ParseDateSchema, "2025-12-31 14:46:28.246756").getTime(),
+		// ).not.toBeNaN();
+
+		// expect(v.parse(ParseDateSchema, "2025-12-31 14:46:28.246756")).toBeDate();
+		// expect(
+		// 	v.parse(ParseDateSchema, "2025-12-31 14:46:28.246756").getTime(),
+		// ).not.toBeNaN();
 	});
 });
