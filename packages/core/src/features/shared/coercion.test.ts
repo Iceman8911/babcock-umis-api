@@ -1,6 +1,10 @@
 import { describe, expect, it } from "bun:test";
 import * as v from "valibot";
-import { ParseBooleanSchema, ParseIntegerSchema } from "./coercion";
+import {
+	ParseBooleanSchema,
+	ParseDateSchema,
+	ParseIntegerSchema,
+} from "./coercion";
 
 describe("ParseBooleanSchema", () => {
 	it("should parse boolean true/false", () => {
@@ -37,5 +41,20 @@ describe("ParseIntegerSchema", () => {
 		expect(v.safeParse(ParseIntegerSchema, "100.5").success).toBe(false);
 		expect(v.safeParse(ParseIntegerSchema, "abc").success).toBe(false);
 		expect(v.safeParse(ParseIntegerSchema, NaN).success).toBe(false);
+	});
+});
+
+describe("ParseFloatSchema", () => {
+	it("should parse floats and integers from number and string", () => {
+		expect(v.parse(ParseFloatSchema, 100.31)).toBe(100.31);
+		expect(v.parse(ParseFloatSchema, "400.24")).toBe(400.24);
+		expect(v.parse(ParseFloatSchema, "40")).toBe(40);
+	});
+
+	it("should reject non-number values", () => {
+		expect(v.safeParse(ParseFloatSchema, {}).success).toBe(false);
+		expect(v.safeParse(ParseFloatSchema, "1d00.5").success).toBe(false);
+		expect(v.safeParse(ParseFloatSchema, "abc").success).toBe(false);
+		expect(v.safeParse(ParseFloatSchema, NaN).success).toBe(false);
 	});
 });
