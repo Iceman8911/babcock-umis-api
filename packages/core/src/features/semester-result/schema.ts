@@ -1,9 +1,14 @@
 import * as v from "valibot";
 import { UmisStudentsPagePrefix } from "../../constants/umis-pages";
 import type { Session } from "../shared/_shared";
-import { ParseFloatSchema, ParseIntegerSchema } from "../shared/coercion";
+import { ParseIntegerSchema } from "../shared/coercion";
+import { type GpaOutput, GpaSchema } from "../shared/gpa";
 import { type GradeOutput, GradeSchema } from "../shared/grade";
 import { NormalizeJsonArrayResponseSchema } from "../shared/json-response-normalizer";
+import {
+	type UniversityCreditOutput,
+	UniversityCreditSchema,
+} from "../shared/university-credit";
 import {
 	type UniversityLevelOutput,
 	UniversityLevelSchema,
@@ -18,13 +23,13 @@ export type ResolvedSemesterResultSummaries = ReadonlyArray<
 		cummCreditHours: number;
 
 		/** Cummulative gpa for the semester and previous ones. */
-		cummGpa: number;
+		cummGpa: GpaOutput;
 
 		/** Study level for the semester */
 		studyLevel: UniversityLevelOutput;
 
 		/** Gpa for the semester */
-		gpa: number;
+		gpa: GpaOutput;
 
 		/** Link to results for the courses of the semester */
 		link: string;
@@ -51,8 +56,8 @@ export const FetchedSemesterResultSummariesSchema: v.GenericSchema<
 				credit: ParseIntegerSchema,
 				cummcredit: ParseIntegerSchema,
 
-				cummgpa: ParseFloatSchema,
-				gpa: ParseFloatSchema,
+				cummgpa: GpaSchema,
+				gpa: GpaSchema,
 				/** Random Id */
 				kf: ParseIntegerSchema,
 				/** Serialized DOM link. Also contains the session (2023/2024). */
@@ -93,7 +98,7 @@ export type ResolvedSingleSemesterResults = ReadonlyArray<
 		score: number;
 
 		/** Fixed amount of credits for the course e.g. 0, 1, 2, 3, 6, etc */
-		credit: number;
+		credit: UniversityCreditOutput;
 
 		course: {
 			/** Course code e.g. `GEDS101` */
@@ -116,7 +121,7 @@ export const FetchedSingleSemesterResultsSchema: v.GenericSchema<
 			v.object({
 				courseid: v.string(),
 				coursetitle: v.string(),
-				credit: ParseIntegerSchema,
+				credit: v.pipe(ParseIntegerSchema, UniversityCreditSchema),
 				finalmarks: v.pipe(ParseIntegerSchema, IntegerAtMost100Schema),
 				gpa: ParseIntegerSchema,
 				gradeid: GradeSchema,
