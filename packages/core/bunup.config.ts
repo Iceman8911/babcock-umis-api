@@ -1,19 +1,10 @@
 import { defineConfig } from "bunup";
 
-export default defineConfig([
-	{
-		entry: "src/entrypoints/node.ts",
-		format: ["esm", "cjs"],
-		name: "node",
+export default defineConfig({
+	dts: {
+		inferTypes: true,
 	},
-	{
-		entry: "src/entrypoints/html-rewriter.ts",
-		format: ["esm"],
-		name: "html-rewriter",
-	},
-	{
-		entry: "src/entrypoints/browser.ts",
-		format: ["esm", "iife"],
-		name: "browser",
-	},
-]);
+	entry: "src/features/index.ts",
+	exports: true,
+	format: ["esm", "cjs"],
+});

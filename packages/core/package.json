@@ -1,35 +1,41 @@
 {
 	"dependencies": {
-		"node-html-parser": "^7.0.2"
+		"better-ts-enum": "^0.5.0",
+		"dotenv": "^17.4.1",
+		"node-html-parser": "^7.0.2",
+		"valibot": "^1.2.0"
 	},
 	"description": "Reverse-engineered api for babcock's umis portal",
 	"devDependencies": {
-		"@biomejs/biome": "2.4.0",
-		"@types/bun": "^1.3.9",
+		"@biomejs/biome": "2.4.10",
+		"@types/bun": "^1.3.11",
+		"bumpp": "^11.0.1",
 		"bunup": "^0.16.26",
-		"typescript": "^5.9.3"
+		"typescript": "^6.0.2"
 	},
 	"exports": {
-		"./browser": {
-			"import": "./dist/browser.js",
-			"types": "./dist/browser.d.ts"
-		},
-		"./html-rewriter": {
-			"import": "./dist/html-rewriter.js",
-			"types": "./dist/html-rewriter.d.ts"
-		},
-		"./node": {
-			"import": "./dist/node.js",
-			"require": "./dist/node.cjs",
-			"types": "./dist/node.d.ts"
+		".": {
+			"import": {
+				"default": "./dist/index.js",
+				"types": "./dist/index.d.ts"
+			},
+			"require": {
+				"default": "./dist/index.cjs",
+				"types": "./dist/index.d.cts"
+			}
 		},
 		"./package.json": "./package.json"
 	},
 	"files": [
-		"dist"
+		"dist",
+		"dist/node",
+		"dist/html-rewriter",
+		"dist/min"
 	],
 	"license": "MIT",
-	"name": "@packages/core",
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.js",
+	"name": "babcock-umis-api",
 	"peerDependencies": {
 		"typescript": ">=4.5.0"
 	},
@@ -43,8 +49,11 @@
 		"check": "biome check --write",
 		"check-types": "tsc --noEmit",
 		"dev": "bunup --watch",
-		"test": "bun test"
+		"release": "bumpp --commit --push --tag",
+		"test": "bun test --concurrent --timeout=20000 --coverage"
 	},
+	"sideEffects": false,
 	"type": "module",
+	"types": "./dist/index.d.ts",
 	"version": "0.1.0"
 }

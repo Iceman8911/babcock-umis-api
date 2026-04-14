@@ -3,7 +3,7 @@
 		"allowImportingTsExtensions": true,
 
 		"declaration": true,
-		"isolatedDeclarations": true,
+		// "isolatedDeclarations": true,
 		"module": "Preserve",
 		"moduleDetection": "force",
 
@@ -20,6 +20,8 @@
 
 		"strict": true,
 		"target": "ES2023",
+
+		"types": ["bun"],
 		"verbatimModuleSyntax": true
 	},
 	"exclude": ["node_modules", "dist", "bunup.config.ts"],
