@@ -1,3 +1,5 @@
 - [ ] Possibly add attribute extraction to the html parsers, if it's not desirable, remove the node / htmlrewrite split.
 - [ ] Make schemas more forgiving and give fallbacks where possible.
 - [ ] Ensure all tests driectly query umis and keep mocking to a minimum, if possible, remove all mocks and use the real data for testing.
+- [ ] Add an api for getting the data of schools and courses themselves.
+- [ ] A lot of the features share similar stuctures for fetching a page, then parsing json data from UMIS. Consider extracting this into a reuable helper to reduce redundancy.
