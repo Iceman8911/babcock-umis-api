@@ -35,7 +35,7 @@
 	"license": "MIT",
 	"main": "./dist/index.cjs",
 	"module": "./dist/index.js",
-	"name": "babcock-umis-api",
+	"name": "@babcock-umis-api/core",
 	"peerDependencies": {
 		"typescript": ">=4.5.0"
 	},
