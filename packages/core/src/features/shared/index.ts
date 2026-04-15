@@ -1,1 +1,1 @@
-export { type MatricNumberOutput, MatricNumberSchema } from "./credentials";
+export * from "./credentials";
