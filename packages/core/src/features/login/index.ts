@@ -1,17 +1,17 @@
 import * as v from "valibot";
 import { getFetchHeaders } from "../../constants/fetch";
 import { UmisPage } from "../../constants/umis-pages";
-import {
-	type StudentCredentialsInput,
-	StudentCredentialsSchema,
-} from "../../models/schemas/credentials";
-import type { Result } from "../../models/types/result";
 import { getErrorMessage } from "../../utils/error";
 import {
 	type UserLoginCookieOutput,
 	UserLoginCookieSchema,
 } from "../auth/schemas/cookie";
 import { isStudentValid } from "../check-user";
+import {
+	type StudentCredentialsInput,
+	StudentCredentialsSchema,
+} from "../shared/credentials";
+import type { Result } from "../shared/result";
 
 /** Returns the cookies if the user is logged in.
  *

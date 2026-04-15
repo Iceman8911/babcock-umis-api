@@ -1,7 +1,5 @@
 /** biome-ignore-all lint/complexity/noThisInStatic: <I use `this` to refer to any implementation's constructor, rather than the class itself> */
 
-import type { StudentCredentialsInput } from "../../models/schemas/credentials";
-import type { Result } from "../../models/types/result";
 import { checkListings } from "../check-listing";
 import type { ResolvedCheckListings } from "../check-listing/schema";
 import { isStudentValid } from "../check-user";
@@ -24,6 +22,8 @@ import type {
 	DynamicUmisGetterProps,
 	StaticUmisGetterProps,
 } from "../shared/_shared";
+import type { StudentCredentialsInput } from "../shared/credentials";
+import type { Result } from "../shared/result";
 import type { ApiClientGetSemesterResultArg } from "./shared";
 
 /** A client for a single student */

@@ -1,11 +1,11 @@
 import * as v from "valibot";
 import { UmisPage } from "../../constants/umis-pages";
+import { getErrorMessage } from "../../utils/error";
 import {
 	type MatricNumberInput,
 	MatricNumberSchema,
-} from "../../models/schemas/credentials";
-import type { Result } from "../../models/types/result";
-import { getErrorMessage } from "../../utils/error";
+} from "../shared/credentials";
+import type { Result } from "../shared/result";
 import {
 	type VerifiedStudentResponseOutput,
 	VerifiedUserResponseSchema,

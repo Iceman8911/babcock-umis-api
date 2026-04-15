@@ -1,7 +1,7 @@
 import * as v from "valibot";
-import { MatricNumberSchema } from "../../models/schemas/credentials";
 import { normalizeStringToCapitalCase } from "../../utils/string";
 import { ParseBooleanSchema, ParseIntegerSchema } from "../shared/coercion";
+import { MatricNumberSchema } from "../shared/credentials";
 import { EmailSchema } from "../shared/email";
 import { NormalizeJsonArrayResponseSchema } from "../shared/json-response-normalizer";
 import {

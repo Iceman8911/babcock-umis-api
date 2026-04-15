@@ -6,3 +6,4 @@ export * from "./login";
 export * from "./personal-details";
 export * from "./school-info";
 export * from "./semester-result";
+export * from "./shared";

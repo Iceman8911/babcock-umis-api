@@ -1,5 +1,5 @@
 import * as v from "valibot";
-import { MatricNumberSchema } from "../../models/schemas/credentials";
+import { MatricNumberSchema } from "../shared/credentials";
 
 export const VerifiedStudentResponseSchema = v.object({
 	entity_id: v.string(),

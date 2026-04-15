@@ -1,6 +1,6 @@
-import type { Mocks } from "../../models/types/mocks";
-import type { Result } from "../../models/types/result";
 import type HTMLParser from "../parsers/html-parser";
+import type { Mocks } from "./mocks";
+import type { Result } from "./result";
 
 /** For any feature function that simply fetches data */
 export interface StaticUmisGetterProps {
