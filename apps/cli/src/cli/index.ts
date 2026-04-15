@@ -1,11 +1,14 @@
-// We can use the html rewriter part since Bun supports it
-import { HtmlRewriterUmisApiStudentClient } from "@babcock-umis-api/core";
 import { program } from "commander";
 import packageJson from "../../package.json";
+import { cliCheckUserCommand } from "./check-user";
 
 const { description, name, version } = packageJson;
 
-program.name(name).description(description).version(version);
-HtmlRewriterUmisApiStudentClient;
-
-export const runCli = program.parseAsync.bind(program);
+await program
+	.name(name)
+	.description(
+		`${description}.\n\nFor each command, the username and password options can be cleanly substituted via the env variables USERNAME and PASSWORD.`,
+	)
+	.version(version)
+	.addCommand(cliCheckUserCommand)
+	.parseAsync();
