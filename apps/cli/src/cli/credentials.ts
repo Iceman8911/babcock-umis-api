@@ -2,28 +2,21 @@ import {
 	type MatricNumberOutput,
 	MatricNumberSchema,
 } from "@babcock-umis-api/core";
-import { type Command, createOption } from "commander";
+import type { Command } from "commander";
 import prompts from "prompts";
 import * as v from "valibot";
 import { getEnv } from "../shared/env";
+import { cliPasswordOption, cliUsernameOption } from "./common";
 import { CliSharedOptionsSchema } from "./schema";
 
-export const cliUsernameOption = createOption(
-	"-u, --username <user>",
-	"UMIS username / matric number",
-);
-
-export const cliPasswordOption = createOption(
-	"-p, --password <pass>",
-	"UMIS password (use with caution)",
-);
+export { cliPasswordOption, cliUsernameOption };
 
 interface Credentials {
 	readonly pass: string;
 	readonly user: MatricNumberOutput;
 }
 
-/** Prioritises command args but falls back to env variables, nd then manual prompting  */
+/** Prioritises command args but falls back to env variables, and then manual prompting */
 export const cliGetCredentials = async (
 	command: Command,
 ): Promise<Credentials> => {
