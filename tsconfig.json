@@ -7,7 +7,6 @@
 		"lib": ["ESNext"],
 		"module": "Preserve",
 		"moduleDetection": "force",
-
 		// Bundler mode
 		"moduleResolution": "bundler",
 		"noEmit": true,
@@ -15,17 +14,14 @@
 		"noImplicitOverride": true,
 		"noPropertyAccessFromIndexSignature": false,
 		"noUncheckedIndexedAccess": true,
-
 		// Some stricter flags (disabled by default)
 		"noUnusedLocals": false,
 		"noUnusedParameters": false,
 		"skipLibCheck": true,
-
 		// Best practices
 		"strict": true,
 		"target": "ESNext",
-
-		"types": ["bun-types"],
+		"typeRoots": ["./types", "./node_modules/@types"],
 		"verbatimModuleSyntax": true
 	}
 }
